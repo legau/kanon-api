@@ -12,4 +12,4 @@ RUN pip install --upgrade pip && \
     poetry install --no-dev
 COPY . ./
 ENV PYTHONPATH app
-ENTRYPOINT ["uvicorn", "run", "kanon_api.app:app"]
+ENTRYPOINT ["uvicorn", "kanon_api.app:app"]

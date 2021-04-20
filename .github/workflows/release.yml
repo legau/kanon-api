@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     if: github.ref == 'refs/heads/master'
-    needs:
-      - test
-      - lint
 
     steps:
       - uses: actions/checkout@v2
