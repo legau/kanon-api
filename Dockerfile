@@ -7,9 +7,9 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml ./
 RUN pip install --upgrade pip && \
-    pip install poetry uvicorn && \
+    pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --no-dev
+    poetry install --no-dev && pip install uvicorn
 COPY . ./
-ENV PYTHONPATH app
-ENTRYPOINT ["uvicorn", "kanon_api.app:app"]
+ENV HOST 0.0.0.0
+ENTRYPOINT ["./entrypoint.sh"]
