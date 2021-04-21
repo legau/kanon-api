@@ -71,7 +71,8 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Run image
+        run: docker run -d -p 8000:8000 kanonapi:latest
+      - name: Test curl
         run: |
-          docker run -d -p 8000:8000 kanonapi:latest
-          docker ps
-          curl localhost:8000
+          sleep 2s
+          curl --fail "localhost:8000/radices/float_sexa/?value=5"
