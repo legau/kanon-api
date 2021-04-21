@@ -1,10 +1,10 @@
 from typing import Callable
 
 import astropy.units as u
-from astropy.units.quantity import Quantity
 from kanon.calendars import Date
 from kanon.tables.htable import HTable
 from kanon.units import Sexagesimal
+from kanon.units.radices import BasedQuantity
 
 
 def read_dishas(tab_id: int) -> HTable:
@@ -14,20 +14,21 @@ def read_dishas(tab_id: int) -> HTable:
 def position_from_table(
     ndays: Sexagesimal,
     tab: HTable,
-    radix: Quantity,
+    radix: BasedQuantity,
     zodiac_offset: int = 4,
-) -> Quantity:
+) -> BasedQuantity:
+
     result = radix
     for i, v in enumerate(ndays[:]):
-        result += tab.get(v) >> i + zodiac_offset
+        result += tab.get(v) >> (i + 4 - len(ndays[:])) + zodiac_offset
     result %= Sexagesimal(6, 0) * u.degree
     return result
 
 
 def mean_motion(
     tab_id: int, radix: Sexagesimal, **kwargs
-) -> Callable[[Sexagesimal], Quantity]:
-    def func(days: Sexagesimal) -> Quantity:
+) -> Callable[[Sexagesimal], BasedQuantity]:
+    def func(days: Sexagesimal) -> BasedQuantity:
         table = read_dishas(tab_id)
         return position_from_table(days, table, radix * u.degree, **kwargs)
 

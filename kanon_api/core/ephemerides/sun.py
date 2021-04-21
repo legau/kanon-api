@@ -4,9 +4,10 @@ from astropy.units import degree
 from astropy.units.core import Unit
 from astropy.units.quantity import Quantity
 from kanon.calendars import Date
+from kanon.tables.symmetries import Symmetry
 from kanon.units import Sexagesimal
 
-from kanon_api.ephemerides.utils import get_days, mean_motion, read_dishas
+from .utils import get_days, mean_motion, read_dishas
 
 degree = cast(Unit, degree)
 
@@ -15,7 +16,12 @@ mm_fixed_stars = mean_motion(236, Sexagesimal(0))
 mm_access_recess = mean_motion(237, Sexagesimal("5,59;12,34"), zodiac_offset=2)
 
 tab_eq_access_recess = read_dishas(238)
+tab_eq_access_recess.symmetry = [
+    Symmetry("mirror"),
+    Symmetry("periodic", targets=[Sexagesimal(3, 1)]),
+]
 tab_eq_sun = read_dishas(19)
+tab_eq_sun.symmetry = [Symmetry("mirror", sign=-1)]
 
 
 def sun_true_pos(date: Date) -> Quantity:
@@ -31,18 +37,10 @@ def sun_true_pos(date: Date) -> Quantity:
         mean_fixed_star_pos + eq_access_recess + Sexagesimal("1,11;25,23") * degree
     )
 
-    mean_arg_sun = (
-        mean_sun_pos
-        + (Sexagesimal(6, 0) * degree if mean_sun_pos < solar_apogee_pos else 0)
-        - solar_apogee_pos
-    )
+    mean_arg_sun = (mean_sun_pos - solar_apogee_pos) % (Sexagesimal(6, 0) * degree)
 
     eq_sun = tab_eq_sun.get(mean_arg_sun.value)
 
-    true_pos_sun = (
-        mean_sun_pos
-        + (Sexagesimal(6, 0) * degree if mean_sun_pos < eq_sun else 0)
-        - eq_sun
-    )
+    true_pos_sun = (mean_sun_pos - eq_sun) % (Sexagesimal(6, 0) * degree)
 
     return true_pos_sun
