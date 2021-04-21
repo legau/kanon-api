@@ -12,4 +12,5 @@ RUN pip install --upgrade pip && \
     poetry install --no-dev && pip install uvicorn
 COPY . ./
 ENV HOST 0.0.0.0
+RUN chmod +x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
