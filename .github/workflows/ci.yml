@@ -53,12 +53,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
-  test_build:
-    on:
-      pull_request:
-        types: [ready_for_review]
-        branches:
-          - 'master'
+  build:
+    needs: [lint, test]
+    if: ${{github.event_name != 'pull_request' || github.event_name == 'pull_request' && github.event.action == 'ready_for_review'}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
