@@ -54,7 +54,7 @@ jobs:
           fail_ci_if_error: true
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     if: ${{github.event_name != 'pull_request' || github.event.pull_request.draft == false}}
     runs-on: ubuntu-latest
     steps:
@@ -73,4 +73,5 @@ jobs:
       - name: Run image
         run: |
           docker run -d -p 8000:8000 kanonapi:latest
+          docker ps
           curl localhost:8000
