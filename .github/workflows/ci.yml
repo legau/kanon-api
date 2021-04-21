@@ -70,7 +70,7 @@ jobs:
           tags: kanonapi:latest
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-      - name: Docker run image
-        run: docker run -p 8000:8000 kanonapi:latest
+      - name: Run image
+        run: docker run -d -p 8000:8000 kanonapi:latest
       - name: curl
         run: curl localhost:8000/
