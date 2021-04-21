@@ -21,7 +21,7 @@ class TestApp:
     def test_get_suntruepos(self, input, result):
         y, m, d = input
         response = self.client.get(
-            "/sun_true_pos", params={"year": y, "month": m, "day": d}
+            "ephemerides/sun_true_pos", params={"year": y, "month": m, "day": d}
         )
 
         if result == HTTPException:
@@ -43,7 +43,8 @@ class TestApp:
     def test_get_date_jdn(self, input, result):
         calname, y, m, d = input
         response = self.client.get(
-            "/date_jdn", params={"calendar": calname, "year": y, "month": m, "day": d}
+            "calendars/date_jdn",
+            params={"calendar": calname, "year": y, "month": m, "day": d},
         )
 
         if result == HTTPException:
@@ -65,7 +66,7 @@ class TestApp:
     def test_get_jdn_date(self, input, result):
         calname, jdn = input
         response = self.client.get(
-            "/jdn_date", params={"calendar": calname, "jdn": jdn}
+            "calendars/jdn_date", params={"calendar": calname, "jdn": jdn}
         )
 
         if result == HTTPException:
@@ -85,7 +86,7 @@ class TestApp:
     def test_get_float_sexa(self, input, result):
         value, precision = input
         response = self.client.get(
-            "/float_sexa", params={"value": value, "precision": precision}
+            "radices/float_sexa", params={"value": value, "precision": precision}
         )
 
         content: dict = response.json()
@@ -101,7 +102,7 @@ class TestApp:
         ],
     )
     def test_get_sexa_float(self, input, result):
-        response = self.client.get("/sexa_float", params={"value": input})
+        response = self.client.get("radices/sexa_float", params={"value": input})
 
         if result == HTTPException:
             assert response.status_code == 400

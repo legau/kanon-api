@@ -2,7 +2,7 @@ import pytest
 from kanon.calendars import Calendar, Date
 from kanon.units import Sexagesimal
 
-from kanon_api.ephemerides.sun import sun_true_pos
+from kanon_api.core.ephemerides.sun import sun_true_pos
 
 
 @pytest.mark.parametrize(

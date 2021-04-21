@@ -7,7 +7,7 @@ from kanon.calendars import Date
 from kanon.tables.symmetries import Symmetry
 from kanon.units import Sexagesimal
 
-from kanon_api.ephemerides.utils import get_days, mean_motion, read_dishas
+from .utils import get_days, mean_motion, read_dishas
 
 degree = cast(Unit, degree)
 
