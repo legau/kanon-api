@@ -54,7 +54,7 @@ jobs:
           fail_ci_if_error: true
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     if: ${{github.event_name != 'pull_request' || github.event.pull_request.draft == false}}
     runs-on: ubuntu-latest
     steps:
@@ -74,5 +74,5 @@ jobs:
         run: docker run -d -p 8000:8000 kanonapi:latest
       - name: Test curl
         run: |
-          sleep 2s
+          sleep 5s
           curl --fail "localhost:8000/radices/float_sexa/?value=5"
