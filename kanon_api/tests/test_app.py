@@ -11,23 +11,25 @@ class TestApp:
     client = TestClient(app)
 
     @pytest.mark.parametrize(
-        "input, result",
+        "planet, date, result",
         [
-            ((1327, 7, 3), "1,47;18,48"),
-            ((10, 2, 13), "05,22 ; 36,47"),
-            ((2, -10, 3), HTTPException),
+            ("sun", (1327, 7, 3), "1,47;18,48"),
+            ("sun", (10, 2, 13), "05,22 ; 36,47"),
+            ("sun", (10, 52, 13), HTTPException),
+            ("saturn", (2, 10, 3), HTTPException),
         ],
     )
-    def test_get_suntruepos(self, input, result):
-        y, m, d = input
+    def test_get_truepos(self, planet, date, result):
+        y, m, d = date
         response = self.client.get(
-            "ephemerides/sun_true_pos", params={"year": y, "month": m, "day": d}
+            f"ephemerides/{planet}/true_pos", params={"year": y, "month": m, "day": d}
         )
 
         if result == HTTPException:
             assert response.status_code == 400
 
         else:
+            assert response.status_code == 200
             content: dict = response.json()
             assert len(content) == 2
             assert Sexagesimal(content["value"]) == Sexagesimal(result)
@@ -37,20 +39,21 @@ class TestApp:
         [
             (("Julian A.D.", 1753, 11, 13), 2361658),
             (("Arabic Civil Hijra", -600, 5, 13), 1735689),
-            (("Unknown", 2, 10, 3), HTTPException),
+            (("Julian A.D.", 2, 50, 3), HTTPException),
         ],
     )
-    def test_get_date_jdn(self, input, result):
+    def test_get_to_jdn(self, input, result):
         calname, y, m, d = input
         response = self.client.get(
-            "calendars/date_jdn",
-            params={"calendar": calname, "year": y, "month": m, "day": d},
+            f"calendars/{calname}/to_jdn",
+            params={"year": y, "month": m, "day": d},
         )
 
         if result == HTTPException:
             assert response.status_code == 400
 
         else:
+            assert response.status_code == 200
             content: dict = response.json()
             assert len(content) == 1
             assert content["jdn"] == result
@@ -60,54 +63,51 @@ class TestApp:
         [
             (("Julian A.D.", 2361658), [1753, 11, 13]),
             (("Arabic Civil Hijra", 2160836), [600, 5, 13]),
-            (("Unknown", 25855555), HTTPException),
         ],
     )
-    def test_get_jdn_date(self, input, result):
+    def test_get_from_jdn(self, input, result):
         calname, jdn = input
-        response = self.client.get(
-            "calendars/jdn_date", params={"calendar": calname, "jdn": jdn}
-        )
+        response = self.client.get(f"calendars/{calname}/from_jdn", params={"jdn": jdn})
 
-        if result == HTTPException:
-            assert response.status_code == 400
-
-        else:
-            content: dict = response.json()
-            assert len(content) == 1
-            assert content["date"] == result
+        assert response.status_code == 200
+        content: dict = response.json()
+        assert len(content) == 2
+        assert content["ymd"] == result
 
     @pytest.mark.parametrize(
         "input, result",
-        [
-            ((4.5, 2), "4;30"),
-        ],
+        [(("Sexagesimal", 4.5, 2), "4;30")],
     )
-    def test_get_float_sexa(self, input, result):
-        value, precision = input
+    def test_get_from_float(self, input, result):
+
+        radix, value, precision = input
         response = self.client.get(
-            "radices/float_sexa", params={"value": value, "precision": precision}
+            f"radices/{radix}/from_float",
+            params={"value": value, "precision": precision},
         )
+        assert response.status_code == 200
 
         content: dict = response.json()
-        assert len(content) == 1
+        assert len(content) == 2
         assert Sexagesimal(content["value"]) == Sexagesimal(result)
 
     @pytest.mark.parametrize(
         "input, result",
         [
-            ("4;30", 4.5),
-            ("-1;1", -1.0166666666666666),
-            ("aa", HTTPException),
+            (("Historical", "8s5;30"), 245.5),
+            (("Sexagesimal", "-1;1"), -1.0166666666666666),
+            (("Sexagesimal", "aa"), HTTPException),
         ],
     )
-    def test_get_sexa_float(self, input, result):
-        response = self.client.get("radices/sexa_float", params={"value": input})
+    def test_get_to_float(self, input, result):
+        radix, value = input
+        response = self.client.get(f"radices/{radix}/to_float", params={"value": value})
 
         if result == HTTPException:
             assert response.status_code == 400
 
         else:
+            assert response.status_code == 200
             content: dict = response.json()
             assert len(content) == 1
             assert content["value"] == result

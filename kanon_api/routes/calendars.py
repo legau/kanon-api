@@ -1,23 +1,26 @@
+from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
+from kanon.calendars.calendars import Calendar
 
-from kanon_api.utils import safe_calendar, safe_date
+from kanon_api.utils import DateParams, safe_calendar, safe_date
 
 router = APIRouter(prefix="/calendars", tags=["calendars"])
 
 
-@router.get("/date_jdn/")
-def get_date_jdn(calendar: str, year: int, month: int, day: int):
+@router.get("/{calendar}/to_jdn/")
+def get_to_jdn(
+    calendar: Calendar = Depends(safe_calendar),
+    date_params: DateParams = Depends(),
+):
 
-    cal = safe_calendar(calendar)
-    date = safe_date(cal, year, month, day)
+    date = safe_date(calendar, *date_params.ymd)
 
     return {"jdn": date.jdn}
 
 
-@router.get("/jdn_date/")
-def get_jdn_date(calendar: str, jdn: float):
+@router.get("/{calendar}/from_jdn/")
+def get_from_jdn(jdn: float, calendar: Calendar = Depends(safe_calendar)):
 
-    cal = safe_calendar(calendar)
-    date = cal.from_julian_days(jdn)
+    date = calendar.from_julian_days(jdn)
 
-    return {"date": date.ymd}
+    return {"date": str(date), "ymd": date.ymd}
