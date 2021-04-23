@@ -1,10 +1,20 @@
-from typing import Callable
+from typing import Callable, TypeVar
 
-import astropy.units as u
 from kanon.calendars import Date
 from kanon.tables.htable import HTable
 from kanon.units import Sexagesimal
-from kanon.units.radices import BasedQuantity
+from kanon.units.radices import BasedQuantity, BasedReal
+
+from ...units import degree
+
+BasedType = TypeVar("BasedType", BasedReal, BasedQuantity)
+
+
+def mod360(value: BasedType) -> BasedType:
+    mod = Sexagesimal(6, 0)
+    if isinstance(value, BasedQuantity):
+        mod *= value.unit
+    return value % mod
 
 
 def read_dishas(tab_id: int) -> HTable:
@@ -21,8 +31,7 @@ def position_from_table(
     result = radix
     for i, v in enumerate(ndays[:]):
         result += tab.get(v) >> (i + 4 - len(ndays[:])) + zodiac_offset
-    result %= Sexagesimal(6, 0) * u.degree
-    return result
+    return mod360(result)
 
 
 def mean_motion(
@@ -30,7 +39,7 @@ def mean_motion(
 ) -> Callable[[Sexagesimal], BasedQuantity]:
     def func(days: Sexagesimal) -> BasedQuantity:
         table = read_dishas(tab_id)
-        return position_from_table(days, table, radix * u.degree, **kwargs)
+        return position_from_table(days, table, radix * degree, **kwargs)
 
     return func
 
