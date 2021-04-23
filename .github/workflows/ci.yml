@@ -61,6 +61,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
       - name: Build
         id: docker_build
         uses: docker/build-push-action@v2
@@ -68,6 +75,8 @@ jobs:
           context: .
           load: true
           tags: kanonapi:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Run image
