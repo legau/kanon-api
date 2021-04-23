@@ -111,3 +111,7 @@ class TestApp:
             content: dict = response.json()
             assert len(content) == 1
             assert content["value"] == result
+
+    def test_health_check(self):
+        response = self.client.get("health")
+        assert response.status_code == 200
