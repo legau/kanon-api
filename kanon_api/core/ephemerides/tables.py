@@ -12,8 +12,11 @@ class PlanetEnum(Enum):
         ...
 
 
+anti_mirror = Symmetry("mirror", sign=-1)
+mirror = Symmetry("mirror")
+
 _sun_eq_table = read_dishas(19)
-_sun_eq_table.symmetry.append(Symmetry("mirror", sign=-1))
+_sun_eq_table.symmetry.append(mirror)
 
 
 class SUN(PlanetEnum):
@@ -21,9 +24,25 @@ class SUN(PlanetEnum):
     equation = _sun_eq_table.get
 
 
+_moon_arg_eq_table = read_dishas(182)
+_moon_arg_eq_table.symmetry.append(anti_mirror)
+_moon_center_eq_table = read_dishas(181)
+_moon_center_eq_table.symmetry.append(anti_mirror)
+_moon_minuta_prop = read_dishas(239)
+_moon_minuta_prop.symmetry.append(mirror)
+
+
+class MOON(PlanetEnum):
+    mean_argument = mean_motion(197, Sexagesimal(0))
+    mean_motion = mean_motion(194, Sexagesimal("2,2;46,50,16,39"))
+    equation_center = _moon_center_eq_table.get
+    equation_arg = _moon_arg_eq_table.get
+    minuta_proportionalia = _moon_minuta_prop.get
+
+
 _fs_access_recess_eq_table = read_dishas(238)
 _fs_access_recess_eq_table.symmetry = [
-    Symmetry("mirror"),
+    mirror,
     Symmetry("periodic", targets=[Sexagesimal(3, 1)]),
 ]
 

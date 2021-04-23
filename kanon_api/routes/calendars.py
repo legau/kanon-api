@@ -2,7 +2,7 @@ from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 from kanon.calendars.calendars import Calendar
 
-from kanon_api.utils import DateParams, safe_calendar, safe_date
+from ..utils import DateParams, safe_calendar, safe_date
 
 router = APIRouter(prefix="/calendars", tags=["calendars"])
 
