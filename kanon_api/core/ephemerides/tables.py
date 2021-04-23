@@ -1,8 +1,10 @@
 from typing import Callable
-from kanon.units import Sexagesimal
+
 from kanon.tables.symmetries import Symmetry
+from kanon.units import Sexagesimal
 from kanon.units.precision import FuncEnum
 from kanon.units.radices import BasedQuantity, BasedReal
+
 from .utils import mean_motion, read_dishas
 
 TableSolver = Callable[[BasedReal], BasedQuantity]
