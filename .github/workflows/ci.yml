@@ -75,4 +75,4 @@ jobs:
       - name: Test curl
         run: |
           sleep 5s
-          curl --fail "localhost:8000/radices/Sexagesimal/to_float/?value=5"
+          curl --fail "localhost:8000/health"
