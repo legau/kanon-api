@@ -1,12 +1,10 @@
+from kanon.calendars import Date
 from kanon.units import Sexagesimal
 from kanon.units.radices import BasedQuantity
-from .tables import FIXED_STARS, SUN
-from .constants import SUN_ROOT
-from kanon.calendars import Date
 
-from .utils import get_days, mod360
 from ...units import degree
-
+from .tables import FIXED_STARS, SUN
+from .utils import get_days, mod360
 
 SUN_APOGEE: BasedQuantity = Sexagesimal("1,11;25,23") * degree
 
@@ -20,7 +18,9 @@ def sun_true_pos(date: Date) -> BasedQuantity:
 
     eq_access_recess = FIXED_STARS.access_recess_eq(access_recess_pos.value)
 
-    solar_apogee_pos: BasedQuantity = mean_fixed_star_pos + eq_access_recess + SUN_ROOT
+    solar_apogee_pos: BasedQuantity = (
+        mean_fixed_star_pos + eq_access_recess + SUN_APOGEE
+    )
 
     mean_arg_sun = mod360(mean_sun_pos - solar_apogee_pos)
 
