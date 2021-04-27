@@ -22,7 +22,7 @@ def sun_true_pos(date: Date) -> BasedQuantity:
 
     mean_arg_sun = mod360(mean_sun_pos - solar_apogee_pos)
 
-    eq_sun = SUN.equation(mean_arg_sun.to_value())
+    eq_sun = SUN.equation(mean_arg_sun.value)
 
     true_pos_sun = mod360(mean_sun_pos - eq_sun)
 
