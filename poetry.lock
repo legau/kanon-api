@@ -218,7 +218,7 @@ colors = ["colorama (>=0.4.3,<0.5.0)"]
 
 [[package]]
 name = "kanonpy"
-version = "0.1.2"
+version = "0.2.0"
 description = "History of astronomy library"
 category = "main"
 optional = false
@@ -617,7 +617,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a2aad1d27e7d9d1dada6d283cf96c2197a5b7060fb41b7ca8f5713cc20f7136a"
+content-hash = "0672005e6cff229752923fe42712ef4edb588ff3520ae804a1b8db3a498de7fa"
 
 [metadata.files]
 appdirs = [
@@ -764,7 +764,7 @@ isort = [
     {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
 ]
 kanonpy = [
-    {file = "kanonpy-0.1.2.tar.gz", hash = "sha256:13c2e0d759ba54e0be9afe510a4a25a6ca77318bcb0594861f9ce96d949c2375"},
+    {file = "kanonpy-0.2.0.tar.gz", hash = "sha256:d3e21feabbdad9bc7a94e478a8134954892d6f1d2282a7256931cb95415568a6"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.3.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:fd34fbbfbc40628200730bc1febe30631347103fc8d3d4fa012c21ab9c11eca9"},
