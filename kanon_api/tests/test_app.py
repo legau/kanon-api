@@ -38,7 +38,7 @@ class TestApp:
         "input, result",
         [
             (("Julian A.D.", 1753, 11, 13), 2361658),
-            (("Arabic Civil Hijra", -600, 5, 13), 1735689),
+            (("Arabic Civil Hijra", -600, 5, 13), 1735950),
             (("Julian A.D.", 2, 50, 3), HTTPException),
         ],
     )
@@ -63,6 +63,7 @@ class TestApp:
         [
             (("Julian A.D.", 2361658), [1753, 11, 13]),
             (("Arabic Civil Hijra", 2160836), [600, 5, 13]),
+            (("Arabic Civil Hijra", 1735950), [-600, 5, 13]),
         ],
     )
     def test_get_from_jdn(self, input, result):

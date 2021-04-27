@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, cast
 
 from kanon.calendars import Date
 from kanon.tables.htable import HTable
@@ -22,7 +22,7 @@ def read_dishas(tab_id: int) -> HTable:
 
 
 def position_from_table(
-    ndays: Sexagesimal,
+    ndays: BasedReal,
     tab: HTable,
     radix: BasedQuantity,
     zodiac_offset: int = 4,
@@ -30,19 +30,21 @@ def position_from_table(
 
     result = radix
     for i, v in enumerate(ndays[:]):
-        result += tab.get(v) >> (i + 4 - len(ndays[:])) + zodiac_offset
+        result += (
+            cast(BasedQuantity, tab.get(v)) >> (i + 4 - len(ndays[:])) + zodiac_offset
+        )
     return mod360(result)
 
 
 def mean_motion(
-    tab_id: int, radix: Sexagesimal, **kwargs
-) -> Callable[[Sexagesimal], BasedQuantity]:
-    def func(days: Sexagesimal) -> BasedQuantity:
+    tab_id: int, radix: BasedQuantity, **kwargs
+) -> Callable[[BasedReal], BasedQuantity]:
+    def func(days: BasedReal) -> BasedQuantity:
         table = read_dishas(tab_id)
         return position_from_table(days, table, radix * degree, **kwargs)
 
     return func
 
 
-def get_days(date: Date) -> Sexagesimal:
+def get_days(date: Date) -> BasedReal:
     return Sexagesimal.from_float(date.days_from_epoch(), 0)
