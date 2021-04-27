@@ -18,13 +18,11 @@ def sun_true_pos(date: Date) -> BasedQuantity:
 
     eq_access_recess = FIXED_STARS.access_recess_eq(access_recess_pos.value)
 
-    solar_apogee_pos: BasedQuantity = (
-        mean_fixed_star_pos + eq_access_recess + SUN_APOGEE
-    )
+    solar_apogee_pos = mean_fixed_star_pos + eq_access_recess + SUN_APOGEE
 
     mean_arg_sun = mod360(mean_sun_pos - solar_apogee_pos)
 
-    eq_sun = SUN.equation(mean_arg_sun.value)
+    eq_sun = SUN.equation(mean_arg_sun.to_value())
 
     true_pos_sun = mod360(mean_sun_pos - eq_sun)
 

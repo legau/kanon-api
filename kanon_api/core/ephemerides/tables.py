@@ -1,8 +1,8 @@
+from enum import Enum
 from typing import Callable
 
 from kanon.tables.symmetries import Symmetry
 from kanon.units import Sexagesimal
-from kanon.units.precision import FuncEnum
 from kanon.units.radices import BasedQuantity, BasedReal
 
 from .utils import mean_motion, read_dishas
@@ -10,11 +10,9 @@ from .utils import mean_motion, read_dishas
 TableSolver = Callable[[BasedReal], BasedQuantity]
 
 
-class PlanetEnum(FuncEnum):
-    mean_motion: TableSolver
-    equation: TableSolver
-    access_recess_mm: TableSolver
-    access_recess_eq: TableSolver
+class PlanetEnum(Enum):
+    def __call__(self, *args, **kwds) -> BasedQuantity:
+        return self.value[0](*args, **kwds)
 
 
 _sun_eq_table = read_dishas(19)
@@ -22,7 +20,7 @@ _sun_eq_table.symmetry.append(Symmetry("mirror", sign=-1))
 
 
 class SUN(PlanetEnum):
-    mean_motion = mean_motion(193, Sexagesimal("4,38;21,0,30,28"))
+    mean_motion: TableSolver = mean_motion(193, Sexagesimal("4,38;21,0,30,28"))
     equation = _sun_eq_table.get
 
 
