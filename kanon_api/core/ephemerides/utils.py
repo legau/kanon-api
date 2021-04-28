@@ -10,11 +10,13 @@ from ...units import degree
 BasedType = TypeVar("BasedType", BasedReal, BasedQuantity)
 
 
-def mod360(value: BasedType) -> BasedType:
-    mod = Sexagesimal(6, 0)
+def mod(value: BasedType, divisor: int = 360) -> BasedType:
+    _value: BasedReal = value.value if isinstance(value, BasedQuantity) else value
+    res = _value % divisor
+    res = res.resize(value.significant)
     if isinstance(value, BasedQuantity):
-        mod *= value.unit
-    return value % mod
+        return res * value.unit
+    return res
 
 
 def read_dishas(tab_id: int) -> HTable:
@@ -22,24 +24,17 @@ def read_dishas(tab_id: int) -> HTable:
 
 
 def position_from_table(
-    ndays: BasedReal,
-    tab: HTable,
-    radix: BasedQuantity,
-    zodiac_offset: int = 4,
+    ndays: float, tab: HTable, radix: BasedQuantity, width: int = 9
 ) -> BasedQuantity:
-
-    result = radix
-    for i, v in enumerate(ndays[:]):
-        result += (
-            cast(BasedQuantity, tab.get(v)) >> (i + 4 - len(ndays[:])) + zodiac_offset
-        )
-    return mod360(result)
+    coeff: BasedQuantity = cast(BasedQuantity, tab.get(1))
+    coeff = coeff << 2 - width
+    return mod(cast(BasedQuantity, coeff * ndays + radix))
 
 
 def mean_motion(
     tab_id: int, radix: BasedQuantity, **kwargs
-) -> Callable[[BasedReal], BasedQuantity]:
-    def func(days: BasedReal) -> BasedQuantity:
+) -> Callable[[float], BasedQuantity]:
+    def func(days: float) -> BasedQuantity:
         table = read_dishas(tab_id)
         return position_from_table(days, table, radix * degree, **kwargs)
 

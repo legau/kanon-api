@@ -16,7 +16,7 @@ anti_mirror = Symmetry("mirror", sign=-1)
 mirror = Symmetry("mirror")
 
 _sun_eq_table = read_dishas(19)
-_sun_eq_table.symmetry.append(mirror)
+_sun_eq_table.symmetry.append(anti_mirror)
 
 
 class SUN(PlanetEnum):
@@ -24,20 +24,13 @@ class SUN(PlanetEnum):
     equation = _sun_eq_table.get
 
 
-_moon_arg_eq_table = read_dishas(182)
-_moon_arg_eq_table.symmetry.append(anti_mirror)
-_moon_center_eq_table = read_dishas(181)
-_moon_center_eq_table.symmetry.append(anti_mirror)
-_moon_minuta_prop = read_dishas(239)
-_moon_minuta_prop.symmetry.append(mirror)
-
-
 class MOON(PlanetEnum):
-    mean_argument = mean_motion(197, Sexagesimal(0))
+    mean_argument = mean_motion(195, Sexagesimal("3,19;0,14,31,16"))
     mean_motion = mean_motion(194, Sexagesimal("2,2;46,50,16,39"))
-    equation_center = _moon_center_eq_table.get
-    equation_arg = _moon_arg_eq_table.get
-    minuta_proportionalia = _moon_minuta_prop.get
+    equation_center = read_dishas(181).get
+    equation_arg = read_dishas(182).get
+    minuta_proportionalia = read_dishas(239).get
+    diameter_diversion = read_dishas(240).get
 
 
 _fs_access_recess_eq_table = read_dishas(238)
@@ -48,6 +41,6 @@ _fs_access_recess_eq_table.symmetry = [
 
 
 class FIXED_STARS(PlanetEnum):
-    access_recess_mm = mean_motion(237, Sexagesimal("5,59;12,34"), zodiac_offset=2)
+    access_recess_mm = mean_motion(237, Sexagesimal("5,59;12,34"), width=7)
     mean_motion = mean_motion(236, Sexagesimal(0))
     access_recess_eq = _fs_access_recess_eq_table.get

@@ -24,7 +24,8 @@ def test_true_sun(ymd, result):
 @pytest.mark.parametrize(
     "ymd, result",
     [
-        ((1327, 7, 3), "4,19;35,54"),
+        ((1327, 7, 3), "4,19;35,55"),
+        ((10, 2, 13), "01,14 ; 42,27"),
     ],
 )
 def test_true_moon(ymd, result):

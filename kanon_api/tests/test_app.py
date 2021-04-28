@@ -15,6 +15,7 @@ class TestApp:
         [
             ("sun", (1327, 7, 3), "1,47;18,48"),
             ("sun", (10, 2, 13), "05,22 ; 36,47"),
+            ("moon", (1327, 7, 3), "4,19;35,55"),
             ("sun", (10, 52, 13), HTTPException),
             ("saturn", (2, 10, 3), HTTPException),
         ],
@@ -29,7 +30,7 @@ class TestApp:
             assert response.status_code == 400
 
         else:
-            assert response.status_code == 200
+            assert response.status_code == 200, response.text
             content: dict = response.json()
             assert len(content) == 2
             assert Sexagesimal(content["value"]) == Sexagesimal(result)
