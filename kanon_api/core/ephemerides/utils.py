@@ -1,8 +1,6 @@
 from typing import Callable, TypeVar, cast
 
-from kanon.calendars import Date
 from kanon.tables.htable import HTable
-from kanon.units import Sexagesimal
 from kanon.units.radices import BasedQuantity, BasedReal
 
 from ...units import degree
@@ -39,7 +37,3 @@ def mean_motion(
         return position_from_table(days, table, radix * degree, **kwargs)
 
     return func
-
-
-def get_days(date: Date) -> BasedReal:
-    return Sexagesimal.from_float(date.days_from_epoch(), 0)

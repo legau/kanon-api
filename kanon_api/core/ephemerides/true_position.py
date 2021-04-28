@@ -10,18 +10,19 @@ SUN_APOGEE: BasedQuantity = Sexagesimal("1,11;25,23") * degree
 
 
 def sun_true_pos(date: Date) -> BasedQuantity:
+    days = date.days_from_epoch()
 
-    mean_sun_pos = SUN.mean_motion(date.days_from_epoch())
-    mean_fixed_star_pos = FIXED_STARS.mean_motion(date.days_from_epoch())
-    access_recess_pos = FIXED_STARS.access_recess_mm(date.days_from_epoch())
+    mean_sun_pos = SUN.mean_motion(days)
+    mean_fixed_star_pos = FIXED_STARS.mean_motion(days)
+    access_recess_pos = FIXED_STARS.access_recess_mm(days)
 
     eq_access_recess = FIXED_STARS.access_recess_eq(access_recess_pos.value)
 
     solar_apogee_pos = mean_fixed_star_pos + eq_access_recess + SUN_APOGEE
 
-    mean_arg_sun = mod(mean_sun_pos - solar_apogee_pos)
+    mean_arg_sun = mean_sun_pos - solar_apogee_pos
 
-    eq_sun = SUN.equation(mean_arg_sun.value)
+    eq_sun = SUN.equation(mod(mean_arg_sun.value))
 
     true_pos_sun = mod(mean_sun_pos - eq_sun)
 
@@ -29,10 +30,11 @@ def sun_true_pos(date: Date) -> BasedQuantity:
 
 
 def moon_true_pos(date: Date) -> BasedQuantity:
+    days = date.days_from_epoch()
 
-    mean_moon_pos = MOON.mean_motion(date.days_from_epoch())
-    mean_sun_pos = SUN.mean_motion(date.days_from_epoch())
-    mean_arg = MOON.mean_argument(date.days_from_epoch())
+    mean_moon_pos = MOON.mean_motion(days)
+    mean_sun_pos = SUN.mean_motion(days)
+    mean_arg = MOON.mean_argument(days)
 
     moon_center = mod(mean_moon_pos - mean_sun_pos) * 2
 
