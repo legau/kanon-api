@@ -72,6 +72,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          file: docker/Dockerfile
           context: .
           load: true
           tags: kanonapi:latest
@@ -82,6 +83,4 @@ jobs:
       - name: Run image
         run: docker run -d -p 8000:8000 kanonapi:latest
       - name: Test curl
-        run: |
-          sleep 5s
-          curl --fail "localhost:8000/health"
+        run: ./docker/healthcheck.sh
