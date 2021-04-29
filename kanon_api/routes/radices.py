@@ -4,7 +4,7 @@ from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter, HTTPException
 from kanon.units.radices import BasedReal
 
-from kanon_api.utils import safe_radix
+from ..utils import safe_radix
 
 router = APIRouter(prefix="/radices", tags=["radices"])
 
