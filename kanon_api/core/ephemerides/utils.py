@@ -1,7 +1,8 @@
-from typing import Callable, TypeVar, cast
+from typing import Callable, Protocol, TypeVar, cast
 
 from kanon.tables.htable import HTable
 from kanon.units.radices import BasedQuantity, BasedReal
+from kanon.utils.types.number_types import Real
 
 from ...units import degree
 
@@ -29,11 +30,18 @@ def position_from_table(
     return mod(cast(BasedQuantity, coeff * ndays + radix))
 
 
-def mean_motion(
-    tab_id: int, radix: BasedQuantity, **kwargs
-) -> Callable[[float], BasedQuantity]:
+class RealToBasedQuantity(Protocol):
+    def __call__(self, days: Real) -> BasedQuantity:
+        ...
+
+
+def basedstatic(func: Callable) -> RealToBasedQuantity:
+    return cast(RealToBasedQuantity, staticmethod(func))
+
+
+def mean_motion(tab_id: int, radix: BasedQuantity, **kwargs) -> RealToBasedQuantity:
     def func(days: float) -> BasedQuantity:
         table = read_dishas(tab_id)
         return position_from_table(days, table, radix * degree, **kwargs)
 
-    return func
+    return basedstatic(func)

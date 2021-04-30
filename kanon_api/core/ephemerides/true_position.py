@@ -1,26 +1,18 @@
+from typing import Type
+
 from kanon.calendars import Date
-from kanon.units import Sexagesimal
 from kanon.units.radices import BasedQuantity
 
-from ...units import degree
-from .tables import FIXED_STARS, MOON, SUN
+from .tables import MOON, SUN, OuterPlanet
 from .utils import mod
-
-SUN_APOGEE: BasedQuantity = Sexagesimal("1,11;25,23") * degree
 
 
 def sun_true_pos(date: Date) -> BasedQuantity:
     days = date.days_from_epoch()
 
     mean_sun_pos = SUN.mean_motion(days)
-    mean_fixed_star_pos = FIXED_STARS.mean_motion(days)
-    access_recess_pos = FIXED_STARS.access_recess_mm(days)
 
-    eq_access_recess = FIXED_STARS.access_recess_eq(access_recess_pos.value)
-
-    solar_apogee_pos = mean_fixed_star_pos + eq_access_recess + SUN_APOGEE
-
-    mean_arg_sun = mean_sun_pos - solar_apogee_pos
+    mean_arg_sun = mean_sun_pos - SUN.get_apogee(days)
 
     eq_sun = SUN.equation(mod(mean_arg_sun.value))
 
@@ -54,3 +46,7 @@ def moon_true_pos(date: Date) -> BasedQuantity:
         equation_of_argument *= -1
 
     return mean_moon_pos + equation_of_argument
+
+
+def outer_planet_true_pos(date: Date, planet: Type[OuterPlanet]) -> BasedQuantity:
+    raise NotImplementedError
