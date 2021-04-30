@@ -10,8 +10,7 @@ RUN pip install --upgrade pip && \
     pip install poetry && \
     poetry config virtualenvs.create false
 
-RUN poetry install --no-dev --no-root
-RUN pip install uvicorn
+RUN poetry install --no-dev --no-root -E uvicorn
 
 COPY . ./
 ENV HOST 0.0.0.0
