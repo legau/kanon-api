@@ -1,4 +1,3 @@
-from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 
@@ -38,6 +37,6 @@ def get_true_pos(planet: Planet, date_params: DateParams = Depends(DateParams)):
         pos = outer_planet_true_pos(date, enum_to_class[planet])
 
     else:
-        raise HTTPException(400, "Not yet implemented")
+        raise NotImplementedError
 
     return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
