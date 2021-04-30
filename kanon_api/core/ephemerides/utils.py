@@ -11,7 +11,7 @@ BasedType = TypeVar("BasedType", BasedReal, BasedQuantity)
 
 def mod(value: BasedType, divisor: int = 360) -> BasedType:
     _value: BasedReal = value.value if isinstance(value, BasedQuantity) else value
-    res = _value % divisor
+    res = round(_value) % divisor
     res = res.resize(value.significant)
     if isinstance(value, BasedQuantity):
         return res * value.unit
@@ -25,13 +25,13 @@ def read_dishas(tab_id: int) -> HTable:
 def position_from_table(
     ndays: float, tab: HTable, radix: BasedQuantity, width: int = 9
 ) -> BasedQuantity:
-    coeff: BasedQuantity = cast(BasedQuantity, tab.get(1))
+    coeff: BasedQuantity = cast(BasedQuantity, tab.get(2)) / 2
     coeff = coeff << 2 - width
     return mod(cast(BasedQuantity, coeff * ndays + radix))
 
 
 class RealToBasedQuantity(Protocol):
-    def __call__(self, days: Real) -> BasedQuantity:
+    def __call__(self, _v: Real) -> BasedQuantity:
         ...
 
 
