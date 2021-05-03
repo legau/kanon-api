@@ -43,7 +43,7 @@ class Planet(metaclass=ABCMeta):
         return mean_fixed_star_pos + eq_access_recess + cls.apogee_radix
 
 
-class OuterPlanet(Planet):
+class SuperiorPlanet(Planet):
     @staticmethod
     @abstractmethod
     def center_equation(_v: Real) -> BasedQuantity:
@@ -70,7 +70,7 @@ class OuterPlanet(Planet):
         raise NotImplementedError
 
 
-class InnerPlanet(Planet):
+class InferiorPlanet(Planet):
     pass
 
 
@@ -93,17 +93,17 @@ class Moon(Planet):
     diameter_diversion = basedstatic(read_dishas(240).get)
 
 
-class Venus(InnerPlanet):
+class Venus(InferiorPlanet):
     apogee_radix = Sexagesimal("1,11;25,23") * degree
     mean_motion = mean_motion(208, Sexagesimal("0,41;25,29,43"))
 
 
-class Mercury(InnerPlanet):
+class Mercury(InferiorPlanet):
     apogee_radix = Sexagesimal("3,10;39,33,4") * degree
     mean_motion = mean_motion(208, Sexagesimal("0,41;25,29,43"))
 
 
-class Mars(OuterPlanet):
+class Mars(SuperiorPlanet):
     apogee_radix = Sexagesimal("1,55;12,13,4") * degree
     mean_motion = mean_motion(208, Sexagesimal("0,41;25,29,43"), width=7)
     center_equation = basedstatic(read_dishas(187).get)
@@ -113,7 +113,7 @@ class Mars(OuterPlanet):
     long_propior = basedstatic(read_dishas(248).get)
 
 
-class Jupiter(OuterPlanet):
+class Jupiter(SuperiorPlanet):
     apogee_radix = Sexagesimal("2,33;37,0,4") * degree
     mean_motion = mean_motion(207, Sexagesimal("3,0;37,20,43"))
     center_equation = basedstatic(read_dishas(185).get)
@@ -123,7 +123,7 @@ class Jupiter(OuterPlanet):
     long_propior = basedstatic(read_dishas(245).get)
 
 
-class Saturn(OuterPlanet):
+class Saturn(SuperiorPlanet):
     apogee_radix = Sexagesimal("3,53;23,42,4") * degree
     mean_motion = mean_motion(206, Sexagesimal("1,14;5,20,12"), width=8)
     center_equation = basedstatic(read_dishas(235).get)
