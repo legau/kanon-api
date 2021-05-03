@@ -1,9 +1,9 @@
-from typing import Type
+from typing import Type, Union
 
 from kanon.calendars import Date
 from kanon.units.radices import BasedQuantity
 
-from .tables import Moon, Sun, SuperiorPlanet
+from .tables import InferiorPlanet, Moon, Sun, SuperiorPlanet
 from .utils import mod
 
 
@@ -48,17 +48,22 @@ def moon_true_pos(date: Date) -> BasedQuantity:
     return mean_moon_pos + equation_of_argument
 
 
-def outer_planet_true_pos(date: Date, planet: Type[SuperiorPlanet]) -> BasedQuantity:
+def planet_true_pos(
+    date: Date, planet: Type[Union[SuperiorPlanet, InferiorPlanet]]
+) -> BasedQuantity:
     days = date.days_from_epoch()
 
     mean_pos = planet.mean_motion(days)
-    sun_mean_pos = Sun.mean_motion(days)
 
     apogee = planet.get_apogee(days)
 
     mean_center = mod(mean_pos - apogee)
 
-    mean_arg = mod(sun_mean_pos - mean_pos)
+    if issubclass(planet, InferiorPlanet):
+        mean_arg = planet.mean_argument(days)
+    else:
+        sun_mean_pos = Sun.mean_motion(days)
+        mean_arg = mod(sun_mean_pos - mean_pos)
 
     center_equation = planet.center_equation(mean_center.value)
 

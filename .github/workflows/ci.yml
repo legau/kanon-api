@@ -91,4 +91,6 @@ jobs:
       - name: Run image
         run: docker run -d -p 8000:8000 kanonapi:latest
       - name: Test curl
-        run: ./docker/healthcheck.sh
+        run: |
+          sleep 5
+          ./docker/healthcheck.sh

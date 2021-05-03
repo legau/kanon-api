@@ -1,10 +1,21 @@
+from typing import Type, cast
+
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 
-from ..core.ephemerides.tables import Jupiter, Mars, Mercury, Moon, Saturn, Sun, Venus
+from ..core.ephemerides.tables import (
+    Jupiter,
+    Mars,
+    Mercury,
+    Moon,
+    Saturn,
+    Sun,
+    SuperiorPlanet,
+    Venus,
+)
 from ..core.ephemerides.true_position import (
     moon_true_pos,
-    outer_planet_true_pos,
+    planet_true_pos,
     sun_true_pos,
 )
 from ..utils import JULIAN_CALENDAR, DateParams, Planet, safe_date
@@ -33,8 +44,8 @@ def get_true_pos(planet: Planet, date_params: DateParams = Depends(DateParams)):
     elif planet == Planet.MOON:
         pos = moon_true_pos(date)
 
-    elif planet in (Planet.MARS, Planet.SATURN, Planet.JUPITER):
-        pos = outer_planet_true_pos(date, enum_to_class[planet])
+    elif planet in enum_to_class:
+        pos = planet_true_pos(date, cast(Type[SuperiorPlanet], enum_to_class[planet]))
 
     else:
         raise NotImplementedError
