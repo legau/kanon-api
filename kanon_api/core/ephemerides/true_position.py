@@ -3,7 +3,7 @@ from typing import Type
 from kanon.calendars import Date
 from kanon.units.radices import BasedQuantity
 
-from .tables import Moon, OuterPlanet, Sun
+from .tables import Moon, Sun, SuperiorPlanet
 from .utils import mod
 
 
@@ -48,7 +48,7 @@ def moon_true_pos(date: Date) -> BasedQuantity:
     return mean_moon_pos + equation_of_argument
 
 
-def outer_planet_true_pos(date: Date, planet: Type[OuterPlanet]) -> BasedQuantity:
+def outer_planet_true_pos(date: Date, planet: Type[SuperiorPlanet]) -> BasedQuantity:
     days = date.days_from_epoch()
 
     mean_pos = planet.mean_motion(days)
