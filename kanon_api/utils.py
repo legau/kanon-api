@@ -41,9 +41,7 @@ T = TypeVar("T")
 
 
 @no_type_check
-def build_safe_dict_resolver(
-    target: dict[str, T], name: str, param_name: str, path: bool = True
-):
+def build_safe_dict_resolver(target: dict[str, T], name: str, param_name: str):
     enum = StrEnum(name, {k: k for k in target.keys()})
 
     param = inspect.Parameter(
