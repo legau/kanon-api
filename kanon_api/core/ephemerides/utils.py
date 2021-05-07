@@ -22,14 +22,6 @@ def read_dishas(tab_id: int) -> HTable:
     return HTable.read(tab_id, format="dishas")
 
 
-def position_from_table(
-    ndays: float, tab: HTable, radix: BasedQuantity, width: int = 9
-) -> BasedQuantity:
-    coeff: BasedQuantity = cast(BasedQuantity, tab.get(2) / 2)
-    coeff = coeff << 2 - width
-    return mod(cast(BasedQuantity, coeff * ndays + radix))
-
-
 class RealToBasedQuantity(Protocol):
     def __call__(self, _v: Real) -> BasedQuantity:
         ...
