@@ -39,9 +39,12 @@ def basedstatic(func: Callable) -> RealToBasedQuantity:
     return cast(RealToBasedQuantity, staticmethod(func))
 
 
-def mean_motion(tab_id: int, radix: BasedQuantity, **kwargs) -> RealToBasedQuantity:
+def read_from_table(_id: int) -> RealToBasedQuantity:
+    return basedstatic(read_dishas(_id).get)
+
+
+def mean_motion(parameter: BasedReal, radix: BasedReal) -> RealToBasedQuantity:
     def func(days: float) -> BasedQuantity:
-        table = read_dishas(tab_id)
-        return position_from_table(days, table, radix * degree, **kwargs)
+        return mod(parameter * days + radix) * degree
 
     return basedstatic(func)
