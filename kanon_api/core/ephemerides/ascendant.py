@@ -10,7 +10,7 @@ from .utils import mod, read_dishas
 def ascendant(date: Date):
     sun = sun_true_pos(date)
 
-    oblique_ascension = read_dishas(216)
+    oblique_ascension = read_dishas(257)
 
     sun_rising = cast(BasedQuantity, oblique_ascension.get(sun.value))
     sun_setting = cast(BasedQuantity, oblique_ascension.get(mod(sun.value + 180)))

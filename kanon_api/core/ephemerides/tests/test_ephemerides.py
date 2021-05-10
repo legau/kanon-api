@@ -62,8 +62,8 @@ def test_planet_true_pos(planet, ymd, result):
 @pytest.mark.parametrize(
     "date, result",
     [
-        ((1327, 7, 3), "3,19;11,27"),
-        ((10, 2, 13), "1,0;26,53"),
+        ((1327, 7, 3), "3,15;0,3"),
+        ((10, 2, 13), "1,16;48,56"),
     ],
 )
 def test_ascendant(date, result):

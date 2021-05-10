@@ -119,3 +119,11 @@ class TestApp:
     def test_health_check(self):
         response = self.client.get("health")
         assert response.status_code == 200
+
+    def test_get_ascendant(self):
+        response = self.client.get(
+            "ephemerides/ascendant", params={"year": 1327, "month": 7, "day": 3}
+        )
+
+        assert response.status_code == 200
+        assert response.json()["value"] == "03,15 ; 00,03"
