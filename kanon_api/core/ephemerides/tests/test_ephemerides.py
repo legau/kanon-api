@@ -2,12 +2,15 @@ import pytest
 from kanon.calendars import Calendar, Date
 from kanon.units import Sexagesimal
 
+from kanon_api.core.ephemerides.ascendant import ascendant
 from kanon_api.core.ephemerides.tables import Jupiter, Mars, Mercury, Saturn, Venus
 from kanon_api.core.ephemerides.true_position import (
     moon_true_pos,
     planet_true_pos,
     sun_true_pos,
 )
+
+julian_calendar = Calendar.registry["Julian A.D."]
 
 
 @pytest.mark.parametrize(
@@ -18,9 +21,7 @@ from kanon_api.core.ephemerides.true_position import (
     ],
 )
 def test_true_sun(ymd, result):
-    calendar = Calendar.registry["Julian A.D."]
-
-    date = Date(calendar, ymd)
+    date = Date(julian_calendar, ymd)
 
     res = sun_true_pos(date)
     assert round(res.value, 2) == Sexagesimal(result)
@@ -34,9 +35,7 @@ def test_true_sun(ymd, result):
     ],
 )
 def test_true_moon(ymd, result):
-    calendar = Calendar.registry["Julian A.D."]
-
-    date = Date(calendar, ymd)
+    date = Date(julian_calendar, ymd)
 
     res = moon_true_pos(date)
     assert round(res.value, 2) == Sexagesimal(result)
@@ -54,9 +53,20 @@ def test_true_moon(ymd, result):
     ],
 )
 def test_planet_true_pos(planet, ymd, result):
-    calendar = Calendar.registry["Julian A.D."]
-
-    date = Date(calendar, ymd)
+    date = Date(julian_calendar, ymd)
 
     res = planet_true_pos(date, planet)
     assert round(res.value, 2) == Sexagesimal(result)
+
+
+@pytest.mark.parametrize(
+    "date, result",
+    [
+        ((1327, 7, 3), "3,15;0,3"),
+        ((10, 2, 13), "1,16;48,56"),
+    ],
+)
+def test_ascendant(date, result):
+    degree_ascension = ascendant(Date(julian_calendar, date))
+
+    assert round(degree_ascension.value, 2) == Sexagesimal(result)

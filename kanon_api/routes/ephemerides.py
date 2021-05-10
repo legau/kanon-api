@@ -3,7 +3,10 @@ from typing import Type, cast
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 
+from kanon_api.core.ephemerides.ascendant import ascendant
+
 from ..core.ephemerides.tables import (
+    CelestialBody,
     Jupiter,
     Mars,
     Mercury,
@@ -22,7 +25,7 @@ from ..utils import JULIAN_CALENDAR, DateParams, Planet, safe_date
 
 router = APIRouter(prefix="/ephemerides", tags=["ephemerides"])
 
-enum_to_class = {
+enum_to_class: dict[Planet, Type[CelestialBody]] = {
     Planet.SUN: Sun,
     Planet.MOON: Moon,
     Planet.MARS: Mars,
@@ -49,5 +52,15 @@ def get_true_pos(planet: Planet, date_params: DateParams = Depends(DateParams)):
 
     else:
         raise NotImplementedError
+
+    return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
+
+
+@router.get("/ascendant/")
+def get_ascendant(date_params: DateParams = Depends(DateParams)):
+
+    date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+
+    pos = ascendant(date)
 
     return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
