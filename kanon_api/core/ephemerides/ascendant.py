@@ -1,14 +1,13 @@
 from typing import cast
 
-from kanon.calendars.calendars import Date
 from kanon.units.radices import BasedQuantity
 
 from .true_position import sun_true_pos
 from .utils import mod, read_dishas
 
 
-def ascendant(date: Date):
-    sun = sun_true_pos(date)
+def ascendant(days: float):
+    sun = sun_true_pos(days)
 
     oblique_ascension = read_dishas(257)
 

@@ -1,15 +1,12 @@
 from typing import Type
 
-from kanon.calendars import Date
 from kanon.units.radices import BasedQuantity
 
 from .tables import InferiorPlanet, Moon, Sun, SuperiorPlanet
 from .utils import mod
 
 
-def sun_true_pos(date: Date) -> BasedQuantity:
-    days = date.days_from_epoch()
-
+def sun_true_pos(days: float) -> BasedQuantity:
     mean_sun_pos = Sun.mean_motion(days)
 
     mean_arg_sun = mean_sun_pos - Sun.get_apogee(days)
@@ -21,9 +18,7 @@ def sun_true_pos(date: Date) -> BasedQuantity:
     return true_pos_sun
 
 
-def moon_true_pos(date: Date) -> BasedQuantity:
-    days = date.days_from_epoch()
-
+def moon_true_pos(days: float) -> BasedQuantity:
     mean_moon_pos = Moon.mean_motion(days)
     mean_sun_pos = Sun.mean_motion(days)
     mean_arg = Moon.mean_argument(days)
@@ -48,9 +43,7 @@ def moon_true_pos(date: Date) -> BasedQuantity:
     return mean_moon_pos + equation_of_argument
 
 
-def planet_true_pos(date: Date, planet: Type[SuperiorPlanet]) -> BasedQuantity:
-    days = date.days_from_epoch()
-
+def planet_true_pos(days: float, planet: Type[SuperiorPlanet]) -> BasedQuantity:
     mean_pos = planet.mean_motion(days)
 
     apogee = planet.get_apogee(days)
