@@ -139,11 +139,21 @@ class TestApp:
     def test_get_ephemerides(self, planet, date, nval, step):
         y, m, d = date
         response = self.client.get(
-            f"ephemerides/{planet}/true_pos", params={"year": y, "month": m, "day": d}
+            f"ephemerides/{planet}/ephemerides",
+            params={
+                "year": y,
+                "month": m,
+                "day": d,
+                "number_of_values": nval,
+                "step": step,
+            },
         )
 
         assert response.status_code == 200
         data: list[dict] = response.json()
         assert len(data) == nval
 
-        assert all(val.jdn - data[0].jdn == step * idx for idx, val in enumerate(data))
+        assert all(
+            val.get("jdn") - data[0].get("jdn") == step * idx
+            for idx, val in enumerate(data)
+        )

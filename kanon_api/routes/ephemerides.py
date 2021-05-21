@@ -79,7 +79,10 @@ def get_ephemerides(
 
     dates = (start_date + i for i in range(0, number_of_values * step, step))
 
-    return [{
-        "jdn": date.jdn,
-        "position": get_true_pos(planet, DateParams(*date.ymd))["value"]
-    } for date in dates]
+    return [
+        {
+            "jdn": date.jdn,
+            "position": get_true_pos(planet, DateParams(*date.ymd))["value"],
+        }
+        for date in dates
+    ]
