@@ -127,3 +127,23 @@ class TestApp:
 
         assert response.status_code == 200
         assert response.json()["value"] == "03,15 ; 00,03"
+
+    @pytest.mark.parametrize(
+        "planet, date, nval, step",
+        [
+            ("sun", (1327, 7, 3), 1, 1),
+            ("sun", (10, 2, 13), 2, 3),
+            ("moon", (1327, 7, 3), 1, 1),
+        ],
+    )
+    def test_get_ephemerides(self, planet, date, nval, step):
+        y, m, d = date
+        response = self.client.get(
+            f"ephemerides/{planet}/true_pos", params={"year": y, "month": m, "day": d}
+        )
+
+        assert response.status_code == 200
+        data: list[dict] = response.json()
+        assert len(data) == nval
+
+        assert all(val.jdn - data[0].jdn == step * idx for idx, val in enumerate(data))

@@ -3,7 +3,7 @@ from typing import Type, cast
 from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 
-from kanon_api.core.ephemerides.ascendant import ascendant
+from ..core.ephemerides.ascendant import ascendant
 
 from ..core.ephemerides.tables import (
     CelestialBody,
@@ -68,7 +68,7 @@ def get_ascendant(date_params: DateParams = Depends(DateParams)):
     return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
 
 
-@router.get("/{planet}/ephemerides")
+@router.get("/{planet}/ephemerides/")
 def get_ephemerides(
     planet: Planet,
     date_params: DateParams = Depends(DateParams),
@@ -81,5 +81,5 @@ def get_ephemerides(
 
     return [{
         "jdn": date.jdn,
-        "position": get_true_pos(planet, date)["value"]
+        "position": get_true_pos(planet, DateParams(*date.ymd))["value"]
     } for date in dates]
