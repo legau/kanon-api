@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Type, cast
 
 from fastapi.param_functions import Depends, Query
@@ -36,25 +37,38 @@ enum_to_class: dict[Planet, Type[CelestialBody]] = {
 
 
 @router.get("/{planet}/true_pos/")
-def get_true_pos(planet: Planet, date_params: DateParams = Depends(DateParams)):
+def get_true_pos(
+    planet: Planet,
+    date_params: DateParams = Depends(DateParams),
+    number_of_values: int = Query(1, ge=1),
+    step: int = Query(1, ge=1),
+):
 
-    date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
 
     if planet == Planet.SUN:
-        pos = sun_true_pos(date.days_from_epoch())
+        func = sun_true_pos
 
     elif planet == Planet.MOON:
-        pos = moon_true_pos(date.days_from_epoch())
+        func = moon_true_pos
 
     elif planet in enum_to_class:
-        pos = planet_true_pos(
-            date.days_from_epoch(), cast(Type[SuperiorPlanet], enum_to_class[planet])
+        func = partial(
+            planet_true_pos, planet=cast(Type[SuperiorPlanet], enum_to_class[planet])
         )
 
     else:
         raise NotImplementedError
 
-    return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
+    dates = (start_date + i for i in range(0, number_of_values * step, step))
+
+    return [
+        {
+            "jdn": date.jdn,
+            "position": str(round(func(date.days_from_epoch()).value, 2)),
+        }
+        for date in dates
+    ]
 
 
 @router.get("/ascendant/")
@@ -64,24 +78,4 @@ def get_ascendant(date_params: DateParams = Depends(DateParams)):
 
     pos = ascendant(date.days_from_epoch())
 
-    return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
-
-
-@router.get("/{planet}/ephemerides/")
-def get_ephemerides(
-    planet: Planet,
-    date_params: DateParams = Depends(DateParams),
-    number_of_values: int = Query(..., ge=1),
-    step: int = Query(..., ge=1),
-):
-    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
-
-    dates = (start_date + i for i in range(0, number_of_values * step, step))
-
-    return [
-        {
-            "jdn": date.jdn,
-            "position": get_true_pos(planet, DateParams(*date.ymd))["value"],
-        }
-        for date in dates
-    ]
+    return {"value": str(round(pos.value, 2))}

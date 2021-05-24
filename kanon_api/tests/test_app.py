@@ -5,27 +5,36 @@ from kanon.units import Sexagesimal
 
 from kanon_api.app import app
 
+sdate = (1327, 7, 3)
+
 
 class TestApp:
 
     client = TestClient(app)
 
     @pytest.mark.parametrize(
-        "planet, date, result",
+        "planet, date, step, nval, result",
         [
-            ("sun", (1327, 7, 3), "1,47;18,48"),
-            ("sun", (10, 2, 13), "05,22 ; 36,47"),
-            ("moon", (1327, 7, 3), "4,19;35,55"),
-            ("saturn", (1327, 7, 3), "1,47;5,1"),
-            ("venus", (1327, 7, 3), "2,1;27,13"),
-            ("mercury", (1327, 7, 3), "2,13;5,1"),
-            ("sun", (10, 52, 13), HTTPException),
+            ("sun", sdate, 1, 1, "1,47;18,48"),
+            ("sun", (10, 2, 13), 2, 4, "05,22 ; 36,47"),
+            ("moon", sdate, 3, 1, "4,19;35,55"),
+            ("saturn", sdate, 1, 1, "1,47;5,1"),
+            ("venus", sdate, 1, 3, "2,1;27,13"),
+            ("mercury", sdate, 1, 1, "2,13;5,1"),
+            ("sun", (10, 52, 13), 1, 1, HTTPException),
         ],
     )
-    def test_get_truepos(self, planet, date, result):
+    def test_get_truepos(self, planet, date, nval, step, result):
         y, m, d = date
         response = self.client.get(
-            f"ephemerides/{planet}/true_pos", params={"year": y, "month": m, "day": d}
+            f"ephemerides/{planet}/true_pos",
+            params={
+                "year": y,
+                "month": m,
+                "day": d,
+                "number_of_values": nval,
+                "step": step,
+            },
         )
 
         if result == HTTPException:
@@ -33,9 +42,15 @@ class TestApp:
 
         else:
             assert response.status_code == 200, response.text
-            content: dict = response.json()
-            assert len(content) == 2
-            assert Sexagesimal(content["value"]) == Sexagesimal(result)
+            content: list[dict] = response.json()
+            assert Sexagesimal(content[0]["position"]) == Sexagesimal(result)
+
+            assert len(content) == nval
+
+            assert all(
+                val.get("jdn") - content[0].get("jdn") == step * idx
+                for idx, val in enumerate(content)
+            )
 
     @pytest.mark.parametrize(
         "input, result",
@@ -127,33 +142,3 @@ class TestApp:
 
         assert response.status_code == 200
         assert response.json()["value"] == "03,15 ; 00,03"
-
-    @pytest.mark.parametrize(
-        "planet, date, nval, step",
-        [
-            ("sun", (1327, 7, 3), 1, 1),
-            ("sun", (10, 2, 13), 2, 3),
-            ("moon", (1327, 7, 3), 1, 1),
-        ],
-    )
-    def test_get_ephemerides(self, planet, date, nval, step):
-        y, m, d = date
-        response = self.client.get(
-            f"ephemerides/{planet}/ephemerides",
-            params={
-                "year": y,
-                "month": m,
-                "day": d,
-                "number_of_values": nval,
-                "step": step,
-            },
-        )
-
-        assert response.status_code == 200
-        data: list[dict] = response.json()
-        assert len(data) == nval
-
-        assert all(
-            val.get("jdn") - data[0].get("jdn") == step * idx
-            for idx, val in enumerate(data)
-        )
