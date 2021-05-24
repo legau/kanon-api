@@ -1,10 +1,10 @@
+from functools import partial
 from typing import Type, cast
 
-from fastapi.param_functions import Depends
+from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 
-from kanon_api.core.ephemerides.ascendant import ascendant
-
+from ..core.ephemerides.ascendant import ascendant
 from ..core.ephemerides.tables import (
     CelestialBody,
     Jupiter,
@@ -37,23 +37,38 @@ enum_to_class: dict[Planet, Type[CelestialBody]] = {
 
 
 @router.get("/{planet}/true_pos/")
-def get_true_pos(planet: Planet, date_params: DateParams = Depends(DateParams)):
+def get_true_pos(
+    planet: Planet,
+    date_params: DateParams = Depends(DateParams),
+    number_of_values: int = Query(1, ge=1),
+    step: int = Query(1, ge=1),
+):
 
-    date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
 
     if planet == Planet.SUN:
-        pos = sun_true_pos(date)
+        func = sun_true_pos
 
     elif planet == Planet.MOON:
-        pos = moon_true_pos(date)
+        func = moon_true_pos
 
     elif planet in enum_to_class:
-        pos = planet_true_pos(date, cast(Type[SuperiorPlanet], enum_to_class[planet]))
+        func = partial(
+            planet_true_pos, planet=cast(Type[SuperiorPlanet], enum_to_class[planet])
+        )
 
     else:
         raise NotImplementedError
 
-    return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
+    dates = (start_date + i for i in range(0, number_of_values * step, step))
+
+    return [
+        {
+            "jdn": date.jdn,
+            "position": str(round(func(date.days_from_epoch()).value, 2)),
+        }
+        for date in dates
+    ]
 
 
 @router.get("/ascendant/")
@@ -61,6 +76,6 @@ def get_ascendant(date_params: DateParams = Depends(DateParams)):
 
     date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
 
-    pos = ascendant(date)
+    pos = ascendant(date.days_from_epoch())
 
-    return {"value": str(round(pos.value, 2)), "unit": pos.unit.name}
+    return {"value": str(round(pos.value, 2))}

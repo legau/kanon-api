@@ -23,7 +23,7 @@ julian_calendar = Calendar.registry["Julian A.D."]
 def test_true_sun(ymd, result):
     date = Date(julian_calendar, ymd)
 
-    res = sun_true_pos(date)
+    res = sun_true_pos(date.days_from_epoch())
     assert round(res.value, 2) == Sexagesimal(result)
 
 
@@ -37,7 +37,7 @@ def test_true_sun(ymd, result):
 def test_true_moon(ymd, result):
     date = Date(julian_calendar, ymd)
 
-    res = moon_true_pos(date)
+    res = moon_true_pos(date.days_from_epoch())
     assert round(res.value, 2) == Sexagesimal(result)
 
 
@@ -55,7 +55,7 @@ def test_true_moon(ymd, result):
 def test_planet_true_pos(planet, ymd, result):
     date = Date(julian_calendar, ymd)
 
-    res = planet_true_pos(date, planet)
+    res = planet_true_pos(date.days_from_epoch(), planet)
     assert round(res.value, 2) == Sexagesimal(result)
 
 
@@ -67,6 +67,6 @@ def test_planet_true_pos(planet, ymd, result):
     ],
 )
 def test_ascendant(date, result):
-    degree_ascension = ascendant(Date(julian_calendar, date))
+    degree_ascension = ascendant(Date(julian_calendar, date).days_from_epoch())
 
     assert round(degree_ascension.value, 2) == Sexagesimal(result)
