@@ -4,7 +4,6 @@ from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 
 from ..core.ephemerides.ascendant import ascendant
-
 from ..core.ephemerides.tables import (
     CelestialBody,
     Jupiter,
