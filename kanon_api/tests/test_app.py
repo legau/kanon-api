@@ -26,16 +26,18 @@ class TestApp:
     )
     def test_get_truepos(self, planet, date, nval, step, result):
         y, m, d = date
-        response = self.client.get(
-            f"ephemerides/{planet}/true_pos",
-            params={
-                "year": y,
-                "month": m,
-                "day": d,
-                "number_of_values": nval,
-                "step": step,
-            },
-        )
+
+        with TestClient(app) as client:
+            response = client.get(
+                f"ephemerides/{planet}/true_pos",
+                params={
+                    "year": y,
+                    "month": m,
+                    "day": d,
+                    "number_of_values": nval,
+                    "step": step,
+                },
+            )
 
         if result == HTTPException:
             assert response.status_code == 400

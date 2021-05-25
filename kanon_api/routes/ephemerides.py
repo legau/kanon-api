@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures.process import ProcessPoolExecutor
 from functools import partial
 from typing import Type, cast
 
@@ -21,7 +23,7 @@ from ..core.ephemerides.true_position import (
     planet_true_pos,
     sun_true_pos,
 )
-from ..utils import JULIAN_CALENDAR, DateParams, Planet, safe_date
+from ..utils import JULIAN_CALENDAR, DateParams, Planet, get_executor, safe_date
 
 router = APIRouter(prefix="/ephemerides", tags=["ephemerides"])
 
@@ -36,15 +38,7 @@ enum_to_class: dict[Planet, Type[CelestialBody]] = {
 }
 
 
-@router.get("/{planet}/true_pos/")
-def get_true_pos(
-    planet: Planet,
-    date_params: DateParams = Depends(DateParams),
-    number_of_values: int = Query(1, ge=1),
-    step: int = Query(1, ge=1),
-):
-
-    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+def compute_true_pos(planet: Planet, days: float):
 
     if planet == Planet.SUN:
         func = sun_true_pos
@@ -60,14 +54,37 @@ def get_true_pos(
     else:
         raise NotImplementedError
 
+    return str(round(func(days).value, 2))
+
+
+@router.get("/{planet}/true_pos/")
+async def get_true_pos(
+    planet: Planet,
+    date_params: DateParams = Depends(DateParams),
+    number_of_values: int = Query(1, ge=1),
+    step: int = Query(1, ge=1),
+    executor: ProcessPoolExecutor = Depends(get_executor),
+):
+
+    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+
     dates = (start_date + i for i in range(0, number_of_values * step, step))
 
-    return [
-        {
-            "jdn": date.jdn,
-            "position": str(round(func(date.days_from_epoch()).value, 2)),
-        }
+    loop = asyncio.get_running_loop()
+
+    results = [
+        (
+            date.jdn,
+            loop.run_in_executor(
+                executor, compute_true_pos, planet, date.days_from_epoch()
+            ),
+        )
         for date in dates
+    ]
+
+    return [
+        {"jdn": jdn, "position": await result_awaitable}
+        for jdn, result_awaitable in results
     ]
 
 
