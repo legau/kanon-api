@@ -1,7 +1,9 @@
 import inspect
+from concurrent.futures.process import ProcessPoolExecutor
 from enum import Enum
 from typing import TypeVar, no_type_check
 
+from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Query
 from kanon.calendars import Calendar, Date
@@ -71,3 +73,7 @@ class Planet(StrEnum):
     JUPITER = "jupiter"
     MERCURY = "mercury"
     SATURN = "saturn"
+
+
+def get_executor(request: Request) -> ProcessPoolExecutor:
+    return request.app.state.executor
