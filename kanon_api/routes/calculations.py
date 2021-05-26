@@ -4,9 +4,11 @@ from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter, HTTPException
 from kanon.units.radices import BasedReal
 
+from kanon_api.core.calculations.parser import parse
+
 from ..utils import safe_radix
 
-router = APIRouter(prefix="/radices", tags=["radices"])
+router = APIRouter(prefix="/calculations", tags=["calculations"])
 
 
 @router.get("/{radix}/from_float/")
@@ -28,5 +30,17 @@ def get_to_float(
 
     try:
         return {"value": float(radix(value))}
+    except (ValueError, TypeError) as err:
+        raise HTTPException(400, str(err))
+
+
+@router.get("/{radix}/compute/")
+def get_compute(
+    radix: Type[BasedReal] = Depends(safe_radix),
+    query: str = Query(..., min_length=1),
+):
+
+    try:
+        return {"result": str(parse(query, radix))}
     except (ValueError, TypeError) as err:
         raise HTTPException(400, str(err))

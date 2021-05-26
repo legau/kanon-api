@@ -103,7 +103,7 @@ class TestApp:
 
         radix, value, precision = input
         response = self.client.get(
-            f"radices/{radix}/from_float",
+            f"calculations/{radix}/from_float",
             params={"value": value, "precision": precision},
         )
         assert response.status_code == 200
@@ -122,7 +122,9 @@ class TestApp:
     )
     def test_get_to_float(self, input, result):
         radix, value = input
-        response = self.client.get(f"radices/{radix}/to_float", params={"value": value})
+        response = self.client.get(
+            f"calculations/{radix}/to_float", params={"value": value}
+        )
 
         if result == HTTPException:
             assert response.status_code == 400
