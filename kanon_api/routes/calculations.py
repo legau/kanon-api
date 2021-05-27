@@ -1,6 +1,7 @@
+from enum import Enum
 from typing import Type
 
-from fastapi.param_functions import Depends, Query
+from fastapi.param_functions import Depends, Path, Query
 from fastapi.routing import APIRouter, HTTPException
 from kanon.units.radices import BasedReal
 
@@ -42,5 +43,34 @@ def get_compute(
 
     try:
         return {"result": str(parse(query, radix))}
+    except (ValueError, TypeError) as err:
+        raise HTTPException(400, str(err))
+
+
+class Operation(str, Enum):
+    add = "add"
+    sub = "sub"
+    mul = "mul"
+    div = "div"
+
+
+op_to_token = {
+    Operation.add: "+",
+    Operation.sub: "-",
+    Operation.mul: "*",
+    Operation.div: "/",
+}
+
+
+@router.get("/{radix}/{operation}/{a}/{b}/")
+def get_operation(
+    operation: Operation,
+    radix: Type[BasedReal] = Depends(safe_radix),
+    a: str = Path(..., min_length=1),
+    b: str = Path(..., min_length=1),
+):
+
+    try:
+        return {"result": str(parse(f"{a}{op_to_token[operation]}{b}", radix))}
     except (ValueError, TypeError) as err:
         raise HTTPException(400, str(err))
