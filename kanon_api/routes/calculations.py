@@ -41,10 +41,7 @@ def get_compute(
     query: str = Query(..., min_length=1),
 ):
 
-    try:
-        return {"result": str(parse(query, radix))}
-    except (ValueError, TypeError) as err:
-        raise HTTPException(400, str(err))
+    return {"result": str(parse(query, radix))}
 
 
 class Operation(str, Enum):
@@ -70,7 +67,4 @@ def get_operation(
     b: str = Path(..., min_length=1),
 ):
 
-    try:
-        return {"result": str(parse(f"{a}{op_to_token[operation]}{b}", radix))}
-    except (ValueError, TypeError) as err:
-        raise HTTPException(400, str(err))
+    return {"result": str(parse(f"{a}{op_to_token[operation]}{b}", radix))}
