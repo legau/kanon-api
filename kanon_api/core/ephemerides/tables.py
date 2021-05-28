@@ -169,4 +169,7 @@ class Mercury(InferiorPlanet):
     long_propior = read_from_table(254)
 
 
-Sun(), Moon(), Mercury(), Venus(), Mars(), Jupiter(), Saturn(), FixedStars()
+oblique_ascension = read_dishas(257)
+reverse_obl_ascension = oblique_ascension.copy(
+    set_index=oblique_ascension.values_column
+)
