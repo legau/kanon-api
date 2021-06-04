@@ -12,6 +12,10 @@ from ..utils import safe_radix
 router = APIRouter(prefix="/calculations", tags=["calculations"])
 
 
+def based_real_response(br: BasedReal):
+    return {"value": str(br.truncate()), "remainder": str(br.remainder)}
+
+
 @router.get("/{radix}/from_float/")
 def get_from_float(
     *,
@@ -20,7 +24,10 @@ def get_from_float(
     precision: int = 3,
 ):
 
-    return {"value": str(radix.from_float(value, precision)), "type": radix.__name__}
+    return {
+        **based_real_response(radix.from_float(value, precision)),
+        "type": radix.__name__,
+    }
 
 
 @router.get("/{radix}/to_float/")
@@ -41,7 +48,10 @@ def get_compute(
     query: str = Query(..., min_length=1),
 ):
 
-    return {"result": str(parse(query, radix))}
+    try:
+        return based_real_response(parse(query, radix))
+    except SyntaxError as err:
+        raise HTTPException(400, str(err))
 
 
 class Operation(str, Enum):
@@ -67,4 +77,7 @@ def get_operation(
     b: str = Path(..., min_length=1),
 ):
 
-    return {"result": str(parse(f"{a}{op_to_token[operation]}{b}", radix))}
+    try:
+        return based_real_response(parse(f"{a}{op_to_token[operation]}{b}", radix))
+    except SyntaxError as err:
+        raise HTTPException(400, str(err))
