@@ -1,3 +1,5 @@
+import dataclasses
+
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 from kanon.calendars.calendars import Calendar
@@ -24,3 +26,16 @@ def get_from_jdn(jdn: float, calendar: Calendar = Depends(safe_calendar)):
     date = calendar.from_julian_days(jdn)
 
     return {"date": str(date), "ymd": date.ymd}
+
+
+@router.get("/{calendar}/infos")
+def get_infos(calendar: Calendar = Depends(safe_calendar)):
+
+    return {
+        "common_year": calendar.common_year,
+        "leap_year": calendar.leap_year,
+        "months": [dataclasses.asdict(m) for m in calendar.months],
+        "name": calendar.name,
+        "cycle": calendar.cycle,
+        "era": calendar.era.epoch,
+    }

@@ -175,3 +175,13 @@ class TestApp:
         response = self.client.get("calculations/Sexagesimal/sub/4;2/1;0,a30")
 
         assert response.status_code == 400
+
+    def test_calendars_get_infos(self):
+        response = self.client.get("calendars/Julian A.D./infos")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["common_year"] == 365
+        assert data["months"][1]["days_cy"] == 28
+        assert data["cycle"][0] == 3
