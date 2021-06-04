@@ -97,7 +97,10 @@ class TestApp:
 
     @pytest.mark.parametrize(
         "input, result",
-        [(("Sexagesimal", 4.5, 2), "4;30")],
+        [
+            (("Sexagesimal", 4.5, 2), "4;30"),
+            (("Sexagesimal", 4.5, 1), "4;30"),
+        ],
     )
     def test_get_from_float(self, input, result):
 
@@ -109,8 +112,9 @@ class TestApp:
         assert response.status_code == 200
 
         content: dict = response.json()
-        assert len(content) == 2
-        assert Sexagesimal(content["value"]) == Sexagesimal(result)
+        br_result = Sexagesimal(result)
+        assert Sexagesimal(content["value"]) == br_result.truncate()
+        assert content["remainder"] == str(br_result.remainder)
 
     @pytest.mark.parametrize(
         "input, result",
@@ -149,14 +153,35 @@ class TestApp:
 
     def test_get_compute(self):
         response = self.client.get(
-            "calculations/Sexagesimal/compute/", params={"query": "4;2 - 1;0,30"}
+            "calculations/Sexagesimal/compute/", params={"query": "50;30,1 * 0;30"}
         )
 
         assert response.status_code == 200
-        assert response.json()["result"] == "03 ; 01,30"
+        assert response.json()["value"] == "25 ; 15,00"
+        assert response.json()["remainder"] == "0.5"
+
+        response = self.client.get(
+            "calculations/Sexagesimal/compute/", params={"query": "50;3a,1 * 0;30"}
+        )
+
+        assert response.status_code == 400
 
     def test_get_operations(self):
         response = self.client.get("calculations/Sexagesimal/sub/4;2/1;0,30")
 
         assert response.status_code == 200
-        assert response.json()["result"] == "03 ; 01,30"
+        assert response.json()["value"] == "03 ; 01,30"
+
+        response = self.client.get("calculations/Sexagesimal/sub/4;2/1;0,a30")
+
+        assert response.status_code == 400
+
+    def test_calendars_get_infos(self):
+        response = self.client.get("calendars/Julian A.D./infos")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["common_year"] == 365
+        assert data["months"][1]["days_cy"] == 28
+        assert data["cycle"][0] == 3
