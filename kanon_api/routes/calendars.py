@@ -17,7 +17,7 @@ def get_to_jdn(
 
     date = safe_date(calendar, *date_params.ymd)
 
-    return {"jdn": date.jdn}
+    return {"jdn": date.jdn, "date": str(date)}
 
 
 @router.get("/{calendar}/from_jdn/")

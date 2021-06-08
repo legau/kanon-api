@@ -75,8 +75,9 @@ class TestApp:
         else:
             assert response.status_code == 200
             content: dict = response.json()
-            assert len(content) == 1
+            assert len(content) == 2
             assert content["jdn"] == result
+            assert isinstance(content["date"], str)
 
     @pytest.mark.parametrize(
         "input, result",

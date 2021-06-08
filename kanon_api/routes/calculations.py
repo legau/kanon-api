@@ -3,7 +3,7 @@ from typing import Type
 
 from fastapi.param_functions import Depends, Path, Query
 from fastapi.routing import APIRouter, HTTPException
-from kanon.units.radices import BasedReal
+from kanon.units.radices import BasedReal, IllegalBaseValueError
 
 from kanon_api.core.calculations.parser import parse
 
@@ -50,7 +50,7 @@ def get_compute(
 
     try:
         return based_real_response(parse(query, radix))
-    except SyntaxError as err:
+    except (SyntaxError, IllegalBaseValueError) as err:
         raise HTTPException(400, str(err))
 
 
@@ -79,5 +79,5 @@ def get_operation(
 
     try:
         return based_real_response(parse(f"{a}{op_to_token[operation]}{b}", radix))
-    except SyntaxError as err:
+    except (SyntaxError, IllegalBaseValueError) as err:
         raise HTTPException(400, str(err))
