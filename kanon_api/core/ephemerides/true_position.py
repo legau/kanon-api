@@ -74,4 +74,4 @@ def planet_true_pos(days: float, planet: Type[SuperiorPlanet]) -> BasedQuantity:
     if true_arg.value > 180:
         equation_of_argument *= -1
 
-    return equation_of_argument + center_equation + mean_pos
+    return mod(equation_of_argument + center_equation + mean_pos)
