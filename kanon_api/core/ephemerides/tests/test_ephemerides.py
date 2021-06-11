@@ -50,6 +50,8 @@ def test_true_moon(ymd, result):
         (Jupiter, (1327, 7, 3), "2,14;35,29"),
         (Mercury, (1327, 7, 3), "2,13;5,1"),
         (Venus, (1327, 7, 3), "2,1;27,13"),
+        (Venus, (7, 2, 23), "1;6,18"),
+        (Mercury, (7, 3, 26), "5,39 ; 06,40"),
     ],
 )
 def test_planet_true_pos(planet, ymd, result):
