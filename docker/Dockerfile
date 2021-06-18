@@ -15,5 +15,6 @@ RUN pip install uvicorn
 
 COPY . ./
 ENV HOST 0.0.0.0
+ENV PORT 8000
 
 ENTRYPOINT ["./docker/entrypoint.sh"]

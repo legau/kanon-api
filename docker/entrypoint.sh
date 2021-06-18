@@ -1,2 +1,2 @@
 #!/bin/bash
-uvicorn --host $HOST kanon_api.app:app
+uvicorn --host $HOST --port $PORT kanon_api.app:app
