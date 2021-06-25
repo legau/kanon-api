@@ -66,7 +66,7 @@ def test_planet_true_pos(planet, ymd, result):
     "date, result",
     [
         ((1327, 7, 3), "3,15;0,3"),
-        ((10, 2, 13), "1,16;48,56"),
+        ((10, 2, 13), "1,16;48,59"),
     ],
 )
 def test_ascendant(date, result):
