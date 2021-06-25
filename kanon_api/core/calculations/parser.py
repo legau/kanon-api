@@ -33,5 +33,9 @@ def parse(input: str, br: Type[BasedReal], trace="") -> BasedReal:
                     return parse(b, br, input)
             return op(parse(a, br, input), parse(b, br, input))
     if BRMATCHER.match(input):
-        return br(input)
+        split = input.partition(";")
+        left = tuple(int(n) for n in split[0].split(","))
+        right = tuple(int(n) for n in split[2].split(",") if n)
+
+        return br(left, right)
     raise SyntaxError(f"Invalid syntax : {trace or input}")
