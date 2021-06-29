@@ -27,7 +27,7 @@ class FakeRes:
 
 def get(*args, **kwargs):
 
-    if "dishas.obspm.fr" not in args[0]:
+    if "dishas.obspm.fr" not in args[0]:  # pragma: no cover
         return requests.api.get(*args, **kwargs)
 
     dir = Path("dishas_cache")
