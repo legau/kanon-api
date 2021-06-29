@@ -1,6 +1,7 @@
 import importlib
 import pathlib
 import shutil
+import sys
 from unittest import mock
 
 cache_dir = pathlib.Path("dishas_cache")
@@ -10,7 +11,12 @@ def test_dishas_cache():
     if cache_dir.exists():
         shutil.rmtree(cache_dir)
 
-    import kanon_api.core.ephemerides.tables  # noqa
+    if "kanon_api.core.ephemerides.tables" in sys.modules:
+        import kanon_api.core.ephemerides.tables
+
+        importlib.reload(kanon_api.core.ephemerides.tables)
+
+    import kanon_api.core.ephemerides.tables
 
     assert cache_dir.exists()
 
