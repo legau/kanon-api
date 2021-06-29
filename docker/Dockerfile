@@ -13,10 +13,11 @@ RUN pip install --upgrade pip && \
 RUN poetry install --no-dev --no-root
 RUN pip install uvicorn
 
-RUN python -m kanon_api.app
 
 COPY . ./
 ENV HOST 0.0.0.0
 ENV PORT 8000
+
+RUN python -m kanon_api.app
 
 ENTRYPOINT ["./docker/entrypoint.sh"]
