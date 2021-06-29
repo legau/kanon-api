@@ -31,7 +31,9 @@ def test_true_sun(ymd, result):
     "ymd, result",
     [
         ((1327, 7, 3), "4,19;35,55"),
+        ((1403, 3, 12), "3,28;15,28"),
         ((10, 2, 13), "01,14 ; 42,27"),
+        ((1327, 7, 11), "5,57 ; 18,24"),
     ],
 )
 def test_true_moon(ymd, result):
@@ -65,7 +67,7 @@ def test_planet_true_pos(planet, ymd, result):
     "date, result",
     [
         ((1327, 7, 3), "3,15;0,3"),
-        ((10, 2, 13), "1,16;48,56"),
+        ((10, 2, 13), "1,16;48,59"),
     ],
 )
 def test_ascendant(date, result):

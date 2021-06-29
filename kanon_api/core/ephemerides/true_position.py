@@ -23,7 +23,7 @@ def moon_true_pos(days: float) -> BasedQuantity:
     mean_sun_pos = Sun.mean_motion(days)
     mean_arg = Moon.mean_argument(days)
 
-    moon_center = mod(mean_moon_pos - mean_sun_pos) * 2
+    moon_center = mod((mean_moon_pos - mean_sun_pos) * 2)
 
     center_eq = Moon.equation_center(moon_center.value)
 
@@ -40,7 +40,7 @@ def moon_true_pos(days: float) -> BasedQuantity:
     if true_arg.value < 180:
         equation_of_argument *= -1
 
-    return mean_moon_pos + equation_of_argument
+    return mod(mean_moon_pos + equation_of_argument)
 
 
 def planet_true_pos(days: float, planet: Type[SuperiorPlanet]) -> BasedQuantity:
