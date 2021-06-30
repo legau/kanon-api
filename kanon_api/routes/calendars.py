@@ -15,7 +15,7 @@ def get_to_jdn(
     date_params: DateParams = Depends(),
 ):
 
-    date = safe_date(calendar, *date_params.ymd)
+    date = safe_date(calendar, date_params)
 
     return {"jdn": date.jdn, "date": str(date)}
 
