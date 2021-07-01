@@ -66,7 +66,7 @@ async def get_true_pos(
     executor: ProcessPoolExecutor = Depends(get_executor),
 ):
 
-    start_date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+    start_date = safe_date(JULIAN_CALENDAR, date_params)
 
     dates = (start_date + i for i in range(0, number_of_values * step, step))
 
@@ -91,7 +91,7 @@ async def get_true_pos(
 @router.get("/ascendant/")
 def get_ascendant(date_params: DateParams = Depends(DateParams)):
 
-    date = safe_date(JULIAN_CALENDAR, *date_params.ymd)
+    date = safe_date(JULIAN_CALENDAR, date_params)
 
     pos = ascendant(date.days_from_epoch())
 

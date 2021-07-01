@@ -7,14 +7,15 @@ from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Query
 from kanon.calendars import Calendar, Date
+from kanon.calendars.calendars import hm_to_float
 from kanon.units import radix_registry
 
 JULIAN_CALENDAR = Calendar.registry["Julian A.D."]
 
 
-def safe_date(calendar: Calendar, year: int, month: int, day: int) -> Date:
+def safe_date(calendar: Calendar, date: "DateParams") -> Date:
     try:
-        return Date(calendar, (year, month, day))
+        return Date(calendar, date.ymd, date.frac)
     except ValueError as err:
         raise HTTPException(400, str(err))
 
@@ -25,14 +26,22 @@ class DateParams:
         year: int,
         month: int = Query(..., ge=1),
         day: int = Query(..., ge=1),
+        hours: int = Query(12, ge=0, lt=24),
+        minutes: int = Query(0, ge=0, lt=60),
     ):
         self.year = year
         self.month = month
         self.day = day
+        self.hours = hours
+        self.minutes = minutes
 
     @property
     def ymd(self):
         return (self.year, self.month, self.day)
+
+    @property
+    def frac(self):
+        return hm_to_float(self.hours, self.minutes)
 
 
 class StrEnum(str, Enum):
