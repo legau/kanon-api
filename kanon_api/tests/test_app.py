@@ -45,7 +45,10 @@ class TestApp:
         else:
             assert response.status_code == 200, response.text
             content: list[dict] = response.json()
-            assert Sexagesimal(content[0]["position"]) == Sexagesimal(result)
+
+            pos12h = Sexagesimal(content[0]["position"])
+
+            assert pos12h == Sexagesimal(result)
 
             assert len(content) == nval
 
@@ -53,6 +56,36 @@ class TestApp:
                 val.get("jdn") - content[0].get("jdn") == step * idx
                 for idx, val in enumerate(content)
             )
+
+            with TestClient(app) as client:
+                response6h = client.get(
+                    f"ephemerides/{planet}/true_pos",
+                    params={
+                        "year": y,
+                        "month": m,
+                        "day": d,
+                        "hours": 6,
+                        "number_of_values": nval,
+                        "step": step,
+                    },
+                )
+                response13h30 = client.get(
+                    f"ephemerides/{planet}/true_pos",
+                    params={
+                        "year": y,
+                        "month": m,
+                        "day": d,
+                        "hours": 13,
+                        "minutes": 30,
+                        "number_of_values": nval,
+                        "step": step,
+                    },
+                )
+
+            pos6h = Sexagesimal(response6h.json()[0]["position"])
+            pos13h30 = Sexagesimal(response13h30.json()[0]["position"])
+
+            assert pos6h < pos12h < pos13h30
 
     @pytest.mark.parametrize(
         "input, result",
