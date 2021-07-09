@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
+from typing import Union, cast
 
+from kanon.tables.htable import HTable
 from kanon.tables.symmetries import Symmetry
 from kanon.units import Sexagesimal
 from kanon.units.radices import BasedQuantity
@@ -169,7 +171,72 @@ class Mercury(InferiorPlanet):
     long_propior = read_from_table(254)
 
 
-oblique_ascension = read_dishas(257)
-reverse_obl_ascension = oblique_ascension.copy(
-    set_index=oblique_ascension.values_column
-)
+def reverse_table(tab: HTable) -> HTable:
+    return tab.copy(set_index=tab.values_column)
+
+
+class ObliqueAscension:
+    tables: dict[float, HTable] = {
+        16: read_dishas(300),
+        24: read_dishas(301),
+        30: read_dishas(302),
+        36: read_dishas(303),
+        41.5: read_dishas(304),
+        45: read_dishas(305),
+        48: read_dishas(306),
+    }
+
+    @classmethod
+    def _find_index(cls, latitude: float) -> tuple[float, Union[float, None], float]:
+        tab = cls.tables
+
+        if (
+            (idx := latitude) in tab
+            or latitude < (idx := min(tab))
+            or latitude > (idx := max(tab))
+        ):
+            return idx, None, 0
+
+        arr = [x - latitude for x in tab]
+
+        lower_idx = max(x for x in arr if x < 0) + latitude
+        upper_idx = min(x for x in arr if x > 0) + latitude
+        ratio = (latitude - lower_idx) / (upper_idx - lower_idx)
+
+        return lower_idx, upper_idx, ratio
+
+    @classmethod
+    def get(cls, longitude: Real, latitude: float) -> BasedQuantity:
+
+        tab = cls.tables
+
+        lower_idx, upper_idx, ratio = cls._find_index(latitude)
+
+        if upper_idx is None:
+            return cast(BasedQuantity, tab[lower_idx].get(longitude))
+
+        lower = cast(BasedQuantity, tab[lower_idx].get(longitude))
+        upper = cast(BasedQuantity, tab[upper_idx].get(longitude))
+
+        return lower + ratio * (upper - lower)
+
+    @classmethod
+    def reverse_get(cls, obl_ascension: Real, latitude: float) -> BasedQuantity:
+
+        tab = cls.tables
+
+        lower_idx, upper_idx, ratio = cls._find_index(latitude)
+
+        if upper_idx is None:
+            return cast(BasedQuantity, reverse_table(tab[lower_idx]).get(obl_ascension))
+
+        lower_tab = tab[lower_idx]
+        upper_tab = tab[upper_idx]
+
+        interpolated_tab = lower_tab.copy()
+
+        valcol = interpolated_tab.values_column
+
+        interpolated_tab[valcol] += (upper_tab[valcol] - lower_tab[valcol]) * ratio
+
+        return cast(BasedQuantity, reverse_table(interpolated_tab).get(obl_ascension))
