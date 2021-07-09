@@ -179,11 +179,20 @@ class TestApp:
 
     def test_get_ascendant(self):
         response = self.client.get(
-            "ephemerides/ascendant", params={"year": 1327, "month": 7, "day": 3}
+            "ephemerides/ascendant",
+            params={"year": 1327, "month": 7, "day": 3, "latitude": 31},
         )
 
         assert response.status_code == 200
-        assert response.json()["value"] == "03,15 ; 00,03"
+        assert response.json()["value"] == "03,16 ; 11,46"
+
+        response = self.client.get(
+            "ephemerides/ascendant",
+            params={"year": 1327, "month": 7, "day": 3, "latitude": 34.8},
+        )
+
+        assert response.status_code == 200
+        assert response.json()["value"] == "03,15 ; 42,00"
 
     def test_get_compute(self):
         response = self.client.get(
