@@ -64,20 +64,20 @@ def test_planet_true_pos(planet, ymd, result):
 
 
 @pytest.mark.parametrize(
-    "date, latitude, result",
+    "date, hours, latitude, result",
     [
-        ((1327, 7, 3), 31, "03,16 ; 11,46"),
-        ((10, 2, 13), 43, "01,19 ; 32,23"),
-        ((10, 2, 13), 30, "01,10 ; 36,09"),
-        ((10, 2, 13), 10, "01,03 ; 24,58"),
-        ((10, 2, 13), 49, "01,24 ; 46,20"),
-        ((10, 2, 13), 48, "01,24 ; 46,20"),
-        ((10, 2, 13), 48, "01,24 ; 46,20"),
+        ((1327, 7, 3), 0.5, 31, "03,16 ; 11,46"),
+        ((1327, 7, 3), 0.6, 31, "03,46 ; 35,49"),
+        ((10, 2, 13), 0.5, 43, "01,19 ; 32,23"),
+        ((10, 2, 13), 0.5, 30, "01,10 ; 36,09"),
+        ((10, 2, 13), 0.5, 10, "01,03 ; 24,58"),
+        ((10, 2, 13), 0.5, 49, "01,24 ; 46,20"),
+        ((10, 2, 13), 0.5, 48, "01,24 ; 46,20"),
     ],
 )
-def test_ascendant(date, latitude, result):
+def test_ascendant(date, hours, latitude, result):
     degree_ascension = ascendant(
-        Date(julian_calendar, date).days_from_epoch(), latitude
+        Date(julian_calendar, date, hours).days_from_epoch(), latitude
     )
 
     assert round(Sexagesimal(degree_ascension.value, 2), 2) == Sexagesimal(result)
