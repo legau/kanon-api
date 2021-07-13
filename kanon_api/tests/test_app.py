@@ -116,8 +116,11 @@ class TestApp:
         "input, result",
         [
             (("Julian A.D.", 2361658), [1753, 11, 13]),
+            (("Julian A.D.", 2361658.1), [1753, 11, 13]),
+            (("Julian A.D.", 2361658.6), [1753, 11, 14]),
             (("Arabic Civil Hijra", 2160836), [600, 5, 13]),
             (("Arabic Civil Hijra", 1735950), [-600, 5, 13]),
+            (("Arabic Civil Hijra", 1735949.9), [-600, 5, 13]),
         ],
     )
     def test_get_from_jdn(self, input, result):
@@ -126,7 +129,7 @@ class TestApp:
 
         assert response.status_code == 200
         content: dict = response.json()
-        assert len(content) == 2
+        assert len(content) == 3
         assert content["ymd"] == result
 
     @pytest.mark.parametrize(

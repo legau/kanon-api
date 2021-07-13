@@ -25,7 +25,7 @@ def get_from_jdn(jdn: float, calendar: Calendar = Depends(safe_calendar)):
 
     date = calendar.from_julian_days(jdn)
 
-    return {"date": str(date), "ymd": date.ymd}
+    return {"date": str(date), "ymd": date.ymd, "frac": date.frac}
 
 
 @router.get("/{calendar}/infos")
