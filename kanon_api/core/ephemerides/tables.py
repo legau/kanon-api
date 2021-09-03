@@ -7,16 +7,12 @@ from kanon.units.radices import BasedQuantity
 from kanon.utils.types.number_types import Real
 
 from kanon_api.units import degree
+from kanon_api.utils import StaticMeta
 
 from .utils import mean_motion, read_dishas, read_from_table
 
 anti_mirror = Symmetry("mirror", sign=-1)
 mirror = Symmetry("mirror")
-
-
-class StaticMeta(type):
-    def __call__(cls, *args, **kwargs):
-        raise TypeError(f"Can't instantiate static class {cls.__name__}")
 
 
 class CelestialBody(metaclass=StaticMeta):
