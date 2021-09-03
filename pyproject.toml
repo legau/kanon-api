@@ -13,8 +13,8 @@ documentation = "https://kanon-api.readthedocs.io"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-kanonpy = "0.3.1"
-fastapi = "^0.63.0"
+kanon = "0.4.0"
+fastapi = "^0.68.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"

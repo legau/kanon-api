@@ -6,8 +6,7 @@ from fastapi.routing import APIRouter, HTTPException
 from kanon.units.radices import BasedReal, IllegalBaseValueError
 
 from kanon_api.core.calculations.parser import parse
-
-from ..utils import safe_radix
+from kanon_api.utils import safe_radix
 
 router = APIRouter(prefix="/calculations", tags=["calculations"])
 

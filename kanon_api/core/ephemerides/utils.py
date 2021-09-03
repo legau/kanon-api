@@ -4,22 +4,17 @@ from kanon.tables.htable import HTable
 from kanon.units.radices import BasedQuantity, BasedReal
 from kanon.utils.types.number_types import Real
 
-from ...units import degree
+from kanon_api.units import degree
 
 BasedType = TypeVar("BasedType", BasedReal, BasedQuantity)
 
 
 def mod(value: BasedType, divisor: int = 360) -> BasedType:
-    _value: BasedReal = value.value if isinstance(value, BasedQuantity) else value
-    res = _value.__round__() % divisor
-    res = res.resize(value.significant)
-    if isinstance(value, BasedQuantity):
-        return res * value.unit
-    return res
+    return value % (divisor * (value.unit if isinstance(value, BasedQuantity) else 1))
 
 
 def read_dishas(tab_id: int) -> HTable:
-    return HTable.read(tab_id, format="dishas")
+    return HTable.read(tab_id)
 
 
 class RealToBasedQuantity(Protocol):
