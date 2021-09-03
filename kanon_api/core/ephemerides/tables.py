@@ -7,7 +7,8 @@ from kanon.units import Sexagesimal
 from kanon.units.radices import BasedQuantity
 from kanon.utils.types.number_types import Real
 
-from ...units import degree
+from kanon_api.units import degree
+
 from .utils import basedstatic, mean_motion, read_dishas, read_from_table
 
 anti_mirror = Symmetry("mirror", sign=-1)

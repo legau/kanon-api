@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Any
 from urllib.parse import quote
 
 import requests
@@ -19,7 +18,8 @@ def to_pandas(self: HTable, *args, **kwargs):
 
 
 class FakeRes:
-    json_res: Any
+    def __init__(self, json):
+        self.json_res = json
 
     def json(self):
         return self.json_res
@@ -37,10 +37,7 @@ def get(*args, **kwargs):
     path = dir / f"{table_id}.json"
     if path.exists():
         with open(path, "r") as f:
-            json_res = json.load(f)
-            fake_res = FakeRes()
-            fake_res.json_res = json_res
-            return fake_res
+            return FakeRes(json.load(f))
 
     res = requests.api.get(*args, **kwargs)
     text = res.text

@@ -7,8 +7,8 @@ from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 from kanon.units import Sexagesimal
 
-from ..core.ephemerides.ascendant import ascendant
-from ..core.ephemerides.tables import (
+from kanon_api.core.ephemerides.ascendant import ascendant
+from kanon_api.core.ephemerides.tables import (
     CelestialBody,
     Jupiter,
     Mars,
@@ -19,12 +19,12 @@ from ..core.ephemerides.tables import (
     SuperiorPlanet,
     Venus,
 )
-from ..core.ephemerides.true_position import (
+from kanon_api.core.ephemerides.true_position import (
     moon_true_pos,
     planet_true_pos,
     sun_true_pos,
 )
-from ..utils import JULIAN_CALENDAR, DateParams, Planet, get_executor, safe_date
+from kanon_api.utils import JULIAN_CALENDAR, DateParams, Planet, get_executor, safe_date
 
 router = APIRouter(prefix="/ephemerides", tags=["ephemerides"])
 
