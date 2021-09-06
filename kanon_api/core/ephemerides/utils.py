@@ -1,6 +1,7 @@
-from typing import Callable, Protocol, TypeVar, cast
+from typing import Callable, List, Optional, Protocol, TypeVar, cast
 
 from kanon.tables.htable import HTable
+from kanon.tables.symmetries import Symmetry
 from kanon.units.radices import BasedQuantity, BasedReal
 from kanon.utils.types.number_types import Real
 
@@ -26,8 +27,14 @@ def basedstatic(func: Callable) -> RealToBasedQuantity:
     return cast(RealToBasedQuantity, staticmethod(func))
 
 
-def read_from_table(_id: int) -> RealToBasedQuantity:
-    return basedstatic(read_dishas(_id).get)
+def read_from_table(
+    _id: int, symmetry: Optional[List[Symmetry]] = None
+) -> RealToBasedQuantity:
+
+    table = read_dishas(_id)
+    if symmetry:
+        table.symmetry = symmetry
+    return basedstatic(table.get)
 
 
 def mean_motion(parameter: BasedReal, radix: BasedReal) -> RealToBasedQuantity:

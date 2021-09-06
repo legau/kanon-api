@@ -1,4 +1,3 @@
-from abc import ABCMeta, abstractmethod
 from typing import Union, cast
 
 from kanon.tables.htable import HTable
@@ -8,25 +7,18 @@ from kanon.units.radices import BasedQuantity
 from kanon.utils.types.number_types import Real
 
 from kanon_api.units import degree
+from kanon_api.utils import StaticMeta
 
-from .utils import basedstatic, mean_motion, read_dishas, read_from_table
+from .utils import mean_motion, read_dishas, read_from_table
 
 anti_mirror = Symmetry("mirror", sign=-1)
 mirror = Symmetry("mirror")
 
 
-class CelestialBody(metaclass=ABCMeta):
+class CelestialBody(metaclass=StaticMeta):
     @staticmethod
-    @abstractmethod
     def mean_motion(_v: float) -> BasedQuantity:
         raise NotImplementedError
-
-
-_fs_access_recess_eq_table = read_dishas(238)
-_fs_access_recess_eq_table.symmetry = [
-    mirror,
-    Symmetry("periodic", targets=[Sexagesimal(3, 1)]),
-]
 
 
 class FixedStars(CelestialBody):
@@ -34,7 +26,13 @@ class FixedStars(CelestialBody):
         Sexagesimal("0 ; 00,00,30,24,49"), Sexagesimal("5,59;12,34")
     )
     mean_motion = mean_motion(Sexagesimal("0 ; 00,00,04,20,41,17,12"), Sexagesimal(0))
-    access_recess_eq = basedstatic(_fs_access_recess_eq_table.get)
+    access_recess_eq = read_from_table(
+        238,
+        symmetry=[
+            mirror,
+            Symmetry("periodic", targets=[Sexagesimal(3, 1)]),
+        ],
+    )
 
 
 class Moon(CelestialBody):
@@ -63,12 +61,8 @@ class Planet(CelestialBody):
         return mean_fixed_star_pos + eq_access_recess + cls.apogee_radix
 
 
-_sun_eq_table = read_dishas(19)
-_sun_eq_table.symmetry.append(anti_mirror)
-
-
 class Sun(Planet):
-    equation = basedstatic(_sun_eq_table.get)
+    equation = read_from_table(19, symmetry=[anti_mirror])
     mean_motion = mean_motion(
         Sexagesimal("00;59,08,19,37,19,13,56"), Sexagesimal("4,38;21,0,30,28")
     )
@@ -77,27 +71,22 @@ class Sun(Planet):
 
 class SuperiorPlanet(Planet):
     @staticmethod
-    @abstractmethod
     def center_equation(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
     @staticmethod
-    @abstractmethod
     def arg_equation(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
     @staticmethod
-    @abstractmethod
     def min_prop(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
     @staticmethod
-    @abstractmethod
     def long_longior(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
     @staticmethod
-    @abstractmethod
     def long_propior(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
@@ -140,7 +129,6 @@ class Saturn(SuperiorPlanet):
 
 class InferiorPlanet(SuperiorPlanet, Sun):
     @staticmethod
-    @abstractmethod
     def mean_argument(_v: Real) -> BasedQuantity:
         raise NotImplementedError
 
@@ -176,7 +164,7 @@ def reverse_table(tab: HTable) -> HTable:
     return tab.copy(set_index=tab.values_column)
 
 
-class ObliqueAscension:
+class ObliqueAscension(metaclass=StaticMeta):
     tables: dict[float, HTable] = {
         16: read_dishas(300),
         24: read_dishas(301),

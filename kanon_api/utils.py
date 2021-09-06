@@ -86,3 +86,8 @@ class Planet(StrEnum):
 
 def get_executor(request: Request) -> ProcessPoolExecutor:
     return request.app.state.executor
+
+
+class StaticMeta(type):
+    def __call__(cls, *args, **kwargs):
+        raise TypeError(f"Can't instantiate static class {cls.__name__}")
