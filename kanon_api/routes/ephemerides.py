@@ -7,7 +7,7 @@ from fastapi.param_functions import Depends, Query
 from fastapi.routing import APIRouter
 from kanon.units import Sexagesimal
 
-from kanon_api.core.ephemerides.ascendant import ascendant
+from kanon_api.core.ephemerides.ascendant import ascendant, houses
 from kanon_api.core.ephemerides.tables import (
     CelestialBody,
     Jupiter,
@@ -99,4 +99,19 @@ def get_ascendant(
 
     pos = ascendant(date.days_from_epoch(), latitude)
 
-    return {"value": str(round(Sexagesimal(pos.value, 2)))}
+    return str(round(Sexagesimal(pos.value, 2)))
+
+
+@router.get("/houses/")
+def get_houses(
+    latitude: float = Query(..., ge=-90, le=90),
+    date_params: DateParams = Depends(DateParams),
+):
+
+    date = safe_date(JULIAN_CALENDAR, date_params)
+
+    asc = ascendant(date.days_from_epoch(), latitude)
+
+    houses_list = houses(asc, latitude)
+
+    return [str(round(Sexagesimal(x.value, 2))) for x in houses_list]
