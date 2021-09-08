@@ -99,7 +99,7 @@ def get_ascendant(
 
     pos = ascendant(date.days_from_epoch(), latitude)
 
-    return str(round(Sexagesimal(pos.value, 2)))
+    return {"value": str(round(Sexagesimal(pos.value, 2)))}
 
 
 @router.get("/houses/")
