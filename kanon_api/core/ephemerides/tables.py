@@ -229,3 +229,19 @@ class ObliqueAscension(metaclass=StaticMeta):
         interpolated_tab[valcol] += (upper_tab[valcol] - lower_tab[valcol]) * ratio
 
         return cast(BasedQuantity, reverse_table(interpolated_tab).get(obl_ascension))
+
+
+class RightAscension(metaclass=StaticMeta):
+
+    table = read_dishas(404)
+    rtable = table.copy(set_index=table.values_column).apply(
+        table.primary_key[0], lambda x: x.astype(Sexagesimal)
+    )
+
+    @classmethod
+    def get(cls, longitude: Real) -> BasedQuantity:
+        return cls.table.get(longitude + 90 * degree) - 90 * degree
+
+    @classmethod
+    def reverse_get(cls, right_ascension: Real) -> BasedQuantity:
+        return cls.table.get(right_ascension - 90 * degree) + 90 * degree

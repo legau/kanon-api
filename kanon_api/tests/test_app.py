@@ -231,3 +231,14 @@ class TestApp:
         assert data["common_year"] == 365
         assert data["months"][1]["days_cy"] == 28
         assert data["cycle"][0] == 3
+
+    def test_houses(self):
+        response = self.client.get(
+            "ephemerides/houses",
+            params={"year": 1327, "month": 7, "day": 3, "latitude": 31},
+        )
+
+        assert response.status_code == 200
+        assert len(response.json()) == 12
+        assert response.json()[0] == "03,16 ; 11,46"
+        assert response.json()[11] == "02,47 ; 35,40"

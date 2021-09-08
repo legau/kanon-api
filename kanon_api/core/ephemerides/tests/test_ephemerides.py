@@ -2,13 +2,14 @@ import pytest
 from kanon.calendars import Calendar, Date
 from kanon.units import Sexagesimal
 
-from kanon_api.core.ephemerides.ascendant import ascendant
+from kanon_api.core.ephemerides.ascendant import ascendant, houses
 from kanon_api.core.ephemerides.tables import Jupiter, Mars, Mercury, Saturn, Venus
 from kanon_api.core.ephemerides.true_position import (
     moon_true_pos,
     planet_true_pos,
     sun_true_pos,
 )
+from kanon_api.units import degree
 
 julian_calendar = Calendar.registry["Julian A.D."]
 
@@ -81,3 +82,10 @@ def test_ascendant(date, hours, latitude, result):
     )
 
     assert round(Sexagesimal(degree_ascension.value, 2), 2) == Sexagesimal(result)
+
+
+def test_houses():
+    asc = 236 + Sexagesimal("0;38")
+
+    h = houses(asc * degree, float(Sexagesimal("39;51")))
+    assert round(h[2].value) == Sexagesimal("05,07 ; 28")
