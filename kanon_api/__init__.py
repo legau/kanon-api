@@ -1,12 +1,8 @@
-# Starlette quote monkey patching. See https://github.com/encode/starlette/issues/1162
-
 import json
 from pathlib import Path
-from urllib.parse import quote
 
 import requests
 from kanon.tables import HTable
-from starlette import responses
 
 _to_pandas = HTable.to_pandas
 
@@ -51,5 +47,3 @@ def get(*args, **kwargs):
 requests.get = get
 
 HTable.to_pandas = to_pandas  # type: ignore
-
-responses.quote_plus = quote
