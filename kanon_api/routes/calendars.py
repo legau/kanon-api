@@ -2,7 +2,7 @@ import dataclasses
 
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
-from kanon.calendars.calendars import Calendar
+from kanon.calendars.calendars import Calendar, hours_to_day
 
 from kanon_api.utils import DateParams, safe_calendar, safe_date
 
@@ -25,7 +25,7 @@ def get_from_jdn(jdn: float, calendar: Calendar = Depends(safe_calendar)):
 
     date = calendar.from_julian_days(jdn)
 
-    return {"date": str(date), "ymd": date.ymd, "frac": date.frac}
+    return {"date": str(date), "ymd": date.ymd, "frac": hours_to_day(date.hours)}
 
 
 @router.get("/{calendar}/infos")

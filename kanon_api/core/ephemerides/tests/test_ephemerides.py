@@ -78,7 +78,7 @@ def test_planet_true_pos(planet, ymd, result):
 )
 def test_ascendant(date, hours, latitude, result):
     degree_ascension = ascendant(
-        Date(julian_calendar, date, hours).days_from_epoch(), latitude
+        Date(julian_calendar, date, hours * 24).days_from_epoch(), latitude
     )
 
     assert round(Sexagesimal(degree_ascension.value, 2), 2) == Sexagesimal(result)
