@@ -24,8 +24,7 @@ def test_dishas_cache():
 
     assert len(files) > 0
 
-    with open(files[0]) as f:
-        mock_open: mock.MagicMock = mock.mock_open(read_data=f.read())
+    mock_open: mock.MagicMock = mock.MagicMock(wraps=open)
 
     with mock.patch("builtins.open", mock_open):
         importlib.reload(kanon_api.core.ephemerides.tables)

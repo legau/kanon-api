@@ -15,7 +15,7 @@ def mod(value: BasedType, divisor: int = 360) -> BasedType:
 
 
 def read_dishas(tab_id: int) -> HTable:
-    return HTable.read(tab_id)
+    return HTable.read(tab_id, freeze=True)
 
 
 class RealToBasedQuantity(Protocol):
@@ -34,6 +34,8 @@ def read_from_table(
     table = read_dishas(_id)
     if symmetry:
         table.symmetry = symmetry
+    table.unfreeze()
+    table.freeze()
     return basedstatic(table.get)
 
 
