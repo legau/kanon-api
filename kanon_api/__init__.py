@@ -2,15 +2,6 @@ import json
 from pathlib import Path
 
 import requests
-from kanon.tables import HTable
-
-_to_pandas = HTable.to_pandas
-
-
-def to_pandas(self: HTable, *args, **kwargs):
-    if not hasattr(self, "cached_to_pandas"):
-        self.cached_to_pandas = _to_pandas(self)
-    return self.cached_to_pandas.copy()
 
 
 class FakeRes:
@@ -45,5 +36,3 @@ def get(*args, **kwargs):
 
 
 requests.get = get
-
-HTable.to_pandas = to_pandas  # type: ignore
