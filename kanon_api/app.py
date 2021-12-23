@@ -3,13 +3,14 @@ from concurrent.futures.process import ProcessPoolExecutor
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import calculations, calendars, ephemerides
+from .routes import calculations, calendars, ephemerides, models
 
 app = FastAPI()
 
 app.include_router(calendars.router)
 app.include_router(ephemerides.router)
 app.include_router(calculations.router)
+app.include_router(models.router)
 
 origins = ["*"]
 
