@@ -1,8 +1,8 @@
 import pytest
 from fastapi.exceptions import HTTPException
 from fastapi.testclient import TestClient
-from kanon.units import Sexagesimal
 from kanon.models.models import equ_of_the_sun, planet_double_arg_mercury
+from kanon.units import Sexagesimal
 
 from kanon_api.app import app
 

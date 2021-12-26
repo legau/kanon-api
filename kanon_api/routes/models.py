@@ -1,6 +1,6 @@
 import warnings
 from collections import OrderedDict
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import kanon.models.models  # noqa: F401
 import numpy as np
@@ -21,7 +21,15 @@ def model_path(model: int = Path(...)) -> ModelCallable:
         raise HTTPException(status_code=404, detail="Model not found")
 
 
-@router.get("/{model}/")
+class ModelInfos(BaseModel):
+    args: Literal[1, 2]
+    params: tuple[int, ...]
+    table_type: str
+    table_type_id: int
+    model_name: str
+
+
+@router.get("/{model}/", response_model=ModelInfos)
 def get_model(model: ModelCallable = Depends(model_path)):
     return {
         "args": model.args,
@@ -93,7 +101,7 @@ class TableContent(BaseModel):
         arbitrary_types_allowed = True
 
 
-@router.post("/{model}/fill/")
+@router.post("/{model}/fill/", response_model=list[float])
 def fill_by_model(content: TableContent = Depends()):
     params = content.ordered_params.values()
     if None in params:
