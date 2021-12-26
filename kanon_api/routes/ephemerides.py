@@ -61,7 +61,7 @@ def compute_true_pos(planet: Planet, days: float):
 @router.get("/{planet}/true_pos/")
 async def get_true_pos(
     planet: Planet,
-    date_params: DateParams = Depends(DateParams),
+    date_params: DateParams = Depends(),
     number_of_values: int = Query(1, ge=1),
     step: int = Query(1, ge=1),
     executor: ProcessPoolExecutor = Depends(get_executor),
@@ -91,8 +91,7 @@ async def get_true_pos(
 
 @router.get("/ascendant/")
 def get_ascendant(
-    latitude: float = Query(..., ge=-90, le=90),
-    date_params: DateParams = Depends(DateParams),
+    latitude: float = Query(..., ge=-90, le=90), date_params: DateParams = Depends()
 ):
 
     date = safe_date(JULIAN_CALENDAR, date_params)
@@ -104,8 +103,7 @@ def get_ascendant(
 
 @router.get("/houses/")
 def get_houses(
-    latitude: float = Query(..., ge=-90, le=90),
-    date_params: DateParams = Depends(DateParams),
+    latitude: float = Query(..., ge=-90, le=90), date_params: DateParams = Depends()
 ):
 
     date = safe_date(JULIAN_CALENDAR, date_params)
