@@ -291,7 +291,7 @@ def test_fill_model():
     )
     assert response.status_code == 200
     assert response.json() == [
-        [planet_double_arg_mercury(x, y, 1, 2) for x in arg1] for y in arg2
+        planet_double_arg_mercury(x, y, 1, 2) for y in arg2 for x in arg1
     ]
 
     response = client.post(

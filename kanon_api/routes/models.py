@@ -107,9 +107,7 @@ def fill_by_model(content: TableContent = Depends()):
     if None in params:
         raise HTTPException(400, detail="Null parameter")
     if content.arg2:
-        return [
-            [content(a1, a2, *params) for a1 in content.arg1] for a2 in content.arg2
-        ]
+        return [content(a1, a2, *params) for a2 in content.arg2 for a1 in content.arg1]
     return [content(a1, *params) for a1 in content.arg1]
 
 
