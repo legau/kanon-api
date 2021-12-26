@@ -2,6 +2,7 @@ import pytest
 from fastapi.exceptions import HTTPException
 from fastapi.testclient import TestClient
 from kanon.units import Sexagesimal
+from kanon.models.models import equ_of_the_sun, planet_double_arg_mercury
 
 from kanon_api.app import app
 
@@ -250,10 +251,145 @@ def test_houses():
     assert response.json()[11] == "02,47 ; 35,40"
 
 
-def test_models_exists():
-    response = client.get(
-        "models/exists",
-        params={"models": [5, 7, 8]},
+def test_get_model():
+    response = client.get("models/39")
+    assert response.status_code == 200
+    assert response.json() == {
+        "args": 1,
+        "params": [106, 107],
+        "table_type": "equ_anomaly_at_max_dist",
+        "table_type_id": 72,
+        "model_name": "equ_of_anomaly_mercury_at_great_dist",
+    }
+
+    response = client.get("models/1002")
+    assert response.status_code == 404
+
+
+def test_fill_model():
+    arg1 = list(range(10))
+    response = client.post(
+        f"models/{equ_of_the_sun.formula_id}/fill/",
+        json={
+            "arg1": arg1,
+            "params": {"50": 1},
+            "displacement": [0, 0, 0],
+        },
     )
     assert response.status_code == 200
-    assert len(response.json()) == 12
+    assert response.json() == [equ_of_the_sun(x, 1) for x in arg1]
+
+    arg2 = list(range(3))
+    response = client.post(
+        f"models/{planet_double_arg_mercury.formula_id}/fill/",
+        json={
+            "arg1": arg1,
+            "arg2": arg2,
+            "params": {"124": 1, "125": 2},
+            "displacement": [0, 0, 0],
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == [
+        [planet_double_arg_mercury(x, y, 1, 2) for x in arg1] for y in arg2
+    ]
+
+    response = client.post(
+        f"models/{planet_double_arg_mercury.formula_id}/fill/",
+        json={
+            "arg1": arg1,
+            "arg2": arg2,
+            "params": {"124": None, "125": 2},
+            "displacement": [0, 0, 0],
+        },
+    )
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Null parameter"}
+
+
+def test_estimate_model():
+    arg1 = list(range(30))
+    response = client.post(
+        f"models/{equ_of_the_sun.formula_id}/estimate/",
+        json={
+            "entries": [equ_of_the_sun(x, 1) for x in arg1],
+            "arg1": arg1,
+            "params": {"50": None},
+            "displacement": [0, 0, 0],
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {"50": 1}
+
+    arg2 = list(range(5))
+    response = client.post(
+        f"models/{planet_double_arg_mercury.formula_id}/estimate/",
+        json={
+            "arg1": arg1,
+            "arg2": arg2,
+            "entries": [
+                planet_double_arg_mercury(x, y, 1, 2) for y in arg2 for x in arg1
+            ],
+            "params": {"124": None, "125": None},
+            "displacement": [0, 0, 0],
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {"124": 1, "125": 2}
+
+    response = client.post(
+        f"models/{planet_double_arg_mercury.formula_id}/estimate/",
+        json={
+            "arg1": arg1,
+            "arg2": arg2,
+            "entries": [0, 1, 2],
+            "params": {"124": None, "125": None},
+            "displacement": [0, 0, 0],
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Number of entries does not match arguments"}
+
+    response = client.post(
+        f"models/{planet_double_arg_mercury.formula_id}/estimate/",
+        json={
+            "arg1": arg1,
+            "arg2": arg2,
+            "entries": [0] * len(arg1) * len(arg2),
+            "params": {"124": 1, "125": 2},
+            "displacement": [0, 0, 0],
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "No parameter to estimate"}
+
+
+def test_model_tablecontent_validation():
+    def post(json: dict):
+        return client.post(
+            "models/23/fill/",
+            json={
+                "arg1": [1, 2, 3],
+                "params": {"50": 1},
+                "displacement": [0, 0, 0],
+            }
+            | json,
+        )
+
+    response = post({"params": {"30": 3}})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid parameters, (50,)"}
+
+    response = post({"arg1": []})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Arguments cannot be empty"}
+
+    response = post({"displacement": [1, 2]})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Displacement array must have 3 elements"}
+
+    response = post({"arg2": [1, 2]})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid number of arguments"}

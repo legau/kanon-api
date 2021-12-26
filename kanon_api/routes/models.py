@@ -5,18 +5,13 @@ from typing import Any, Optional
 import kanon.models.models  # noqa: F401
 import numpy as np
 from fastapi import HTTPException
-from fastapi.param_functions import Depends, Path, Query
+from fastapi.param_functions import Depends, Path
 from fastapi.routing import APIRouter
-from kanon.models.meta import ModelCallable, _registered_ids, get_model_by_id
+from kanon.models.meta import ModelCallable, get_model_by_id
 from pydantic import BaseModel, root_validator, validator
 from scipy import optimize
 
 router = APIRouter(prefix="/models", tags=["models"])
-
-
-@router.get("/exists/")
-def exists(models: list[int] = Query(...)):
-    return {"a": [int(m) in _registered_ids for m in models]}
 
 
 def model_path(model: int = Path(...)) -> ModelCallable:
@@ -24,6 +19,17 @@ def model_path(model: int = Path(...)) -> ModelCallable:
         return get_model_by_id(model)
     except (KeyError, ValueError):
         raise HTTPException(status_code=404, detail="Model not found")
+
+
+@router.get("/{model}/")
+def get_model(model: ModelCallable = Depends(model_path)):
+    return {
+        "args": model.args,
+        "params": model.params,
+        "table_type": model.table_type.name,
+        "table_type_id": model.table_type.value,
+        "model_name": model.__name__,
+    }
 
 
 class TableContent(BaseModel):
@@ -99,7 +105,7 @@ def fill_by_model(content: TableContent = Depends()):
     return [content(a1, *params) for a1 in content.arg1]
 
 
-@router.post("/{model}/estimate/")
+@router.post("/{model}/estimate/", response_model=dict[int, float])
 def estimate_parameter(
     entries: list[float],
     content: TableContent = Depends(),
@@ -137,7 +143,7 @@ def estimate_parameter(
             popt, _ = optimize.curve_fit(
                 optim_model, arguments, np.array(entries), [1] * len(keys)
             )
-        except TypeError as err:
+        except TypeError as err:  # pragma: no cover
             raise HTTPException(status_code=400, detail=str(err))
 
     return zip(keys, popt)
