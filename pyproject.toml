@@ -14,7 +14,7 @@ documentation = "https://kanon-api.readthedocs.io"
 [tool.poetry.dependencies]
 python = "^3.9"
 kanon = "0.5.2"
-fastapi = "^0.70.0"
+fastapi = "^0.73.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1"
