@@ -88,9 +88,9 @@ def test_ascendant(date, hours, latitude, result):
 @pytest.mark.parametrize(
     "method, result2, result8",
     [
-        (HouseMethods.M1, "05,08 ; 07", "02,08 ; 07"),
-        (HouseMethods.M2, "05,07 ; 28", "02,05 ; 42"),
-        (HouseMethods.M5, "04,56 ; 14", "01,56 ; 14"),
+        (HouseMethods.M1, "05,04 ; 52", "02,04 ; 52"),
+        (HouseMethods.M2, "05,05 ; 27", "02,06 ; 56"),
+        (HouseMethods.M5, "04,56 ; 50", "01,56 ; 50"),
         (HouseMethods.M6, "04,56 ; 38", "01,56 ; 38"),
     ],
 )

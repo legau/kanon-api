@@ -58,20 +58,16 @@ def build_safe_dict_resolver(
 
     if isinstance(default, str):
 
-        class Default:
+        class Default(str):
             value = default
 
-            def __str__(self):
-                return self.value
-
-    else:
-        Default = default
+        default = Default(default)
 
     param = inspect.Parameter(
         param_name,
         inspect.Parameter.POSITIONAL_OR_KEYWORD,
         annotation=enum,
-        default=Default,
+        default=default,
     )
 
     def func(**kwargs: enum) -> T:

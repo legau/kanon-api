@@ -248,7 +248,7 @@ def test_houses():
     assert response.status_code == 200
     assert len(response.json()) == 12
     assert response.json()[0] == "03,16 ; 11,46"
-    assert response.json()[11] == "02,47 ; 35,40"
+    assert response.json()[11] == "02,46 ; 34,47"
 
     response = client.get(
         "ephemerides/houses",
@@ -261,7 +261,7 @@ def test_houses():
         },
     )
 
-    assert response.json()[10] == "02,19 ; 59,16"
+    assert response.json()[10] == "02,15 ; 54,30"
 
 
 def test_get_model():
@@ -406,3 +406,9 @@ def test_model_tablecontent_validation():
     response = post({"arg2": [1, 2]})
     assert response.status_code == 400
     assert response.json() == {"detail": "Invalid number of arguments"}
+
+
+def test_openapi():
+    response = client.get("/openapi.json")
+
+    assert response.status_code == 200
