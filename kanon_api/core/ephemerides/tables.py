@@ -3,13 +3,13 @@ from typing import Union, cast
 from kanon.tables.htable import HTable
 from kanon.tables.symmetries import Symmetry
 from kanon.units import Sexagesimal
-from kanon.units.radices import BasedQuantity
+from kanon.units.radices import BasedQuantity, BasedReal
 from kanon.utils.types.number_types import Real
 
 from kanon_api.units import degree
 from kanon_api.utils import StaticMeta
 
-from .utils import mean_motion, read_dishas, read_from_table
+from .utils import mean_motion, mod, read_dishas, read_from_table
 
 anti_mirror = Symmetry("mirror", sign=-1)
 mirror = Symmetry("mirror")
@@ -234,14 +234,12 @@ class ObliqueAscension(metaclass=StaticMeta):
 class RightAscension(metaclass=StaticMeta):
 
     table = read_dishas(404)
-    rtable = table.copy(set_index=table.values_column).apply(
-        table.primary_key[0], lambda x: x.astype(Sexagesimal)
-    )
+    rtable = table.copy(set_index=table.values_column)
 
     @classmethod
-    def get(cls, longitude: Real) -> BasedQuantity:
-        return cls.table.get(longitude + 90 * degree) - 90 * degree
+    def get(cls, longitude: BasedReal) -> BasedQuantity:  # pragma: no cover
+        return mod(cls.table.get(mod(longitude + 90)) - 90 * degree)
 
     @classmethod
-    def reverse_get(cls, right_ascension: Real) -> BasedQuantity:
-        return cls.table.get(right_ascension - 90 * degree) + 90 * degree
+    def reverse_get(cls, right_ascension: BasedReal) -> BasedQuantity:
+        return mod(cls.rtable.get(mod(right_ascension - 90)) + 90 * degree)
