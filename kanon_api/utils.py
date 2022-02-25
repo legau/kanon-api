@@ -1,13 +1,14 @@
 import inspect
 from concurrent.futures.process import ProcessPoolExecutor
 from enum import Enum
-from typing import TypeVar, no_type_check
+from typing import Type, TypeVar, Union, no_type_check
 
+import kanon.units.definitions as definitions
 from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Query
 from kanon.calendars import Calendar, Date
-from kanon.units import radix_registry
+from kanon.units import BasedReal
 
 JULIAN_CALENDAR = Calendar.registry["Julian A.D."]
 
@@ -47,11 +48,30 @@ T = TypeVar("T")
 
 
 @no_type_check
-def build_safe_dict_resolver(target: dict[str, T], name: str, param_name: str):
+def build_safe_dict_resolver(
+    target: dict[str, T],
+    name: str,
+    param_name: str,
+    default: Union[str, Type[inspect.Parameter.empty]] = inspect.Parameter.empty,
+):
     enum = StrEnum(name, {k: k for k in target.keys()})
 
+    if isinstance(default, str):
+
+        class Default:
+            value = default
+
+            def __str__(self):
+                return self.value
+
+    else:
+        Default = default
+
     param = inspect.Parameter(
-        param_name, inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=enum
+        param_name,
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=enum,
+        default=Default,
     )
 
     def func(**kwargs: enum) -> T:
@@ -66,7 +86,15 @@ safe_calendar = build_safe_dict_resolver(
     Calendar.registry, "SupportedCalendars", "calendar"
 )
 
-safe_radix = build_safe_dict_resolver(radix_registry, "SupportedRadices", "radix")
+safe_radix = build_safe_dict_resolver(
+    {
+        x.__name__: x
+        for x in definitions.__dict__.values()
+        if inspect.isclass(x) and issubclass(x, BasedReal)
+    },
+    "SupportedRadices",
+    "radix",
+)
 
 
 class Planet(StrEnum):

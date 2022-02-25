@@ -9,7 +9,7 @@ from kanon.utils.types.number_types import Real
 from kanon_api.units import degree
 from kanon_api.utils import StaticMeta
 
-from .utils import mean_motion, read_dishas, read_from_table
+from .utils import mean_motion, mod, read_dishas, read_from_table
 
 anti_mirror = Symmetry("mirror", sign=-1)
 mirror = Symmetry("mirror")
@@ -240,8 +240,8 @@ class RightAscension(metaclass=StaticMeta):
 
     @classmethod
     def get(cls, longitude: Real) -> BasedQuantity:
-        return cls.table.get(longitude + 90 * degree) - 90 * degree
+        return mod(cls.table.get(longitude + 90) - 90 * degree)
 
     @classmethod
     def reverse_get(cls, right_ascension: Real) -> BasedQuantity:
-        return cls.table.get(right_ascension - 90 * degree) + 90 * degree
+        return mod(cls.table.get(right_ascension - 90) + 90 * degree)

@@ -25,4 +25,4 @@ repos:
     hooks:
       - id: mypy
         args: []
-        additional_dependencies: [kanon, fastapi, starlette, pytest, types-requests, scipy]
+        additional_dependencies: [kanon==0.6.0, fastapi, starlette, pytest, types-requests, scipy]

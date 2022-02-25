@@ -250,6 +250,19 @@ def test_houses():
     assert response.json()[0] == "03,16 ; 11,46"
     assert response.json()[11] == "02,47 ; 35,40"
 
+    response = client.get(
+        "ephemerides/houses",
+        params={
+            "year": 1327,
+            "month": 7,
+            "day": 3,
+            "latitude": 31,
+            "method": "M1",
+        },
+    )
+
+    assert response.json()[10] == "02,19 ; 59,16"
+
 
 def test_get_model():
     response = client.get("models/39")

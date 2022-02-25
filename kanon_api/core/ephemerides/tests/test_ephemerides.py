@@ -2,7 +2,8 @@ import pytest
 from kanon.calendars import Calendar, Date
 from kanon.units import Sexagesimal
 
-from kanon_api.core.ephemerides.ascendant import ascendant, houses
+from kanon_api.core.ephemerides.ascendant import ascendant
+from kanon_api.core.ephemerides.houses import HouseMethods
 from kanon_api.core.ephemerides.tables import Jupiter, Mars, Mercury, Saturn, Venus
 from kanon_api.core.ephemerides.true_position import (
     moon_true_pos,
@@ -84,8 +85,18 @@ def test_ascendant(date, hours, latitude, result):
     assert round(Sexagesimal(degree_ascension.value, 2), 2) == Sexagesimal(result)
 
 
-def test_houses():
+@pytest.mark.parametrize(
+    "method, result2, result8",
+    [
+        (HouseMethods.M1, "05,08 ; 07", "02,08 ; 07"),
+        (HouseMethods.M2, "05,07 ; 28", "02,05 ; 42"),
+        (HouseMethods.M5, "04,56 ; 14", "01,56 ; 14"),
+        (HouseMethods.M6, "04,56 ; 38", "01,56 ; 38"),
+    ],
+)
+def test_houses(method: HouseMethods, result2, result8):
     asc = 236 + Sexagesimal("0;38")
-
-    h = houses(asc * degree, float(Sexagesimal("39;51")))
-    assert round(h[2].value) == Sexagesimal("05,07 ; 28")
+    houses = method(asc * degree, float(Sexagesimal("39;51")))
+    assert len(houses) == 12
+    assert round(houses[2]) == Sexagesimal(result2)
+    assert round(houses[8]) == Sexagesimal(result8)
