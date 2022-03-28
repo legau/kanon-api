@@ -282,7 +282,7 @@ plugins = ["setuptools"]
 
 [[package]]
 name = "kanon"
-version = "0.6.0"
+version = "0.6.2"
 description = "History of astronomy library"
 category = "main"
 optional = false
@@ -760,7 +760,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "8cdba270092ddf5d115054086fafb27895fa12a24586f417f2bad9025b6a24ac"
+content-hash = "59d46e3ba640c81f8b2da90aec620f989b537963abc8299abc6b11ea22acf4f0"
 
 [metadata.files]
 anyio = [
@@ -932,8 +932,8 @@ isort = [
     {file = "isort-5.10.1.tar.gz", hash = "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"},
 ]
 kanon = [
-    {file = "kanon-0.6.0-py3-none-any.whl", hash = "sha256:71e1931cb10e601b9ce0e7ef71939ed7eb795207a7586120d619f7294aa09911"},
-    {file = "kanon-0.6.0.tar.gz", hash = "sha256:73d6d74471a8b953fa8a1c09f06b378cf5b75e20e59ebd796f2a710bfe2395d5"},
+    {file = "kanon-0.6.2-py3-none-any.whl", hash = "sha256:9c8763549413863ea0c8acaf9dabee3a5cf127ca15410c3c564e83ea29f8bea6"},
+    {file = "kanon-0.6.2.tar.gz", hash = "sha256:53d9c4819348e6eeb0874b7c8bfc1c228bede2381528f76ca6e9550ad26d1802"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.3.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:1d819553730d3c2724582124aee8a03c846ec4362ded1034c16fb3ef309264e6"},
