@@ -24,7 +24,7 @@ pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 mypy = "^0.931"
 pre-commit = "^2.17.0"
-types-requests = "^2.25.0"
+types-requests = "^2.27.19"
 uvicorn = "^0.17.5"
 
 [build-system]
