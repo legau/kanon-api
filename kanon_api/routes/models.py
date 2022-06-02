@@ -1,16 +1,22 @@
 import warnings
 from collections import OrderedDict
-from typing import Any, Literal
+from typing import Any, Literal, Protocol, runtime_checkable
 
 import numpy as np
 from fastapi import HTTPException
 from fastapi.param_functions import Depends, Path
 from fastapi.routing import APIRouter
-from kanon.models.meta import ModelCallable, get_model_by_id
+from kanon.models.meta import ModelCallable as _ModelCallable
+from kanon.models.meta import get_model_by_id
 from pydantic import BaseModel, root_validator, validator
 from scipy import optimize
 
 router = APIRouter(prefix="/models", tags=["models"])
+
+
+@runtime_checkable
+class ModelCallable(_ModelCallable, Protocol):
+    ...
 
 
 def model_path(model: int = Path(...)) -> ModelCallable:

@@ -1,4 +1,4 @@
-from typing import Callable, Literal, Protocol, TypeVar, cast
+from typing import Callable, Literal, Protocol, TypeVar, cast, runtime_checkable
 
 from kanon.tables.htable import HTable
 from kanon.tables.symmetries import Symmetry
@@ -22,6 +22,7 @@ def read_dishas(tab_id: int) -> HTable:
     return table
 
 
+@runtime_checkable
 class RealToBasedQuantity(Protocol):
     def __call__(self, _v: Real) -> BasedQuantity:
         ...
