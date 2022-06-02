@@ -4,7 +4,14 @@ from kanon.units import Sexagesimal
 
 from kanon_api.core.ephemerides.ascendant import ascendant
 from kanon_api.core.ephemerides.houses import HouseMethods
-from kanon_api.core.ephemerides.tables import Jupiter, Mars, Mercury, Saturn, Venus
+from kanon_api.core.ephemerides.table_classes import (
+    Jupiter,
+    Mars,
+    Mercury,
+    Saturn,
+    Venus,
+)
+from kanon_api.core.ephemerides.tables import TableSets
 from kanon_api.core.ephemerides.true_position import (
     moon_true_pos,
     planet_true_pos,
@@ -16,46 +23,46 @@ julian_calendar = Calendar.registry["Julian A.D."]
 
 
 @pytest.mark.parametrize(
-    "ymd, result",
+    "ts, ymd, result",
     [
-        ((1327, 7, 3), "1,47;18,48"),
-        ((10, 2, 13), "05,22 ; 36,47"),
+        (TableSets.parisian, (1327, 7, 3), "1,47;18,48"),
+        (TableSets.parisian, (10, 2, 13), "05,22 ; 56,25"),
     ],
 )
-def test_true_sun(ymd, result):
+def test_true_sun(ts, ymd, result):
     date = Date(julian_calendar, ymd)
 
-    res = sun_true_pos(date.days_from_epoch())
+    res = sun_true_pos(ts, date.days_from_epoch())
     assert round(res.value, 2) == Sexagesimal(result)
 
 
 @pytest.mark.parametrize(
-    "ymd, result",
+    "ts, ymd, result",
     [
-        ((1327, 7, 3), "4,19;35,55"),
-        ((1403, 3, 12), "3,28;15,28"),
-        ((10, 2, 13), "01,14 ; 42,27"),
-        ((1327, 7, 11), "5,57 ; 18,24"),
+        (TableSets.parisian, (1327, 7, 3), "4,19;35,55"),
+        (TableSets.parisian, (1403, 3, 12), "3,28;15,28"),
+        (TableSets.parisian, (10, 2, 13), "01,14 ; 42,27"),
+        (TableSets.parisian, (1327, 7, 11), "5,57 ; 18,24"),
     ],
 )
-def test_true_moon(ymd, result):
+def test_true_moon(ts, ymd, result):
     date = Date(julian_calendar, ymd)
 
-    res = moon_true_pos(date.days_from_epoch())
+    res = moon_true_pos(ts, date.days_from_epoch())
     assert round(res.value, 2) == Sexagesimal(result)
 
 
 @pytest.mark.parametrize(
     "planet, ymd, result",
     [
-        (Mars, (1327, 7, 3), "2,14;52,23"),
-        (Mars, (10, 2, 13), "5,41;36,30"),
-        (Saturn, (1327, 7, 3), "1,47;5,1"),
-        (Jupiter, (1327, 7, 3), "2,14;35,29"),
-        (Mercury, (1327, 7, 3), "2,13;5,1"),
-        (Venus, (1327, 7, 3), "2,1;27,13"),
-        (Venus, (7, 2, 23), "1;6,18"),
-        (Mercury, (7, 3, 26), "5,39 ; 06,40"),
+        (TableSets.parisian(Mars), (1327, 7, 3), "2,14;52,23"),
+        (TableSets.parisian(Mars), (10, 2, 13), "05,40 ; 42,26"),
+        (TableSets.parisian(Saturn), (1327, 7, 3), "1,47;5,1"),
+        (TableSets.parisian(Jupiter), (1327, 7, 3), "2,14;35,29"),
+        (TableSets.parisian(Mercury), (1327, 7, 3), "2,13;5,1"),
+        (TableSets.parisian(Venus), (1327, 7, 3), "2,1;27,13"),
+        (TableSets.parisian(Venus), (7, 2, 23), "01 ; 07,13"),
+        (TableSets.parisian(Mercury), (7, 3, 26), "05,38 ; 38,43"),
     ],
 )
 def test_planet_true_pos(planet, ymd, result):
@@ -66,37 +73,37 @@ def test_planet_true_pos(planet, ymd, result):
 
 
 @pytest.mark.parametrize(
-    "date, hours, latitude, result",
+    "ts, date, hours, latitude, result",
     [
-        ((1327, 7, 3), 0.5, 31, "03,16 ; 11,46"),
-        ((1327, 7, 3), 0.6, 31, "03,46 ; 35,49"),
-        ((10, 2, 13), 0.5, 43, "01,19 ; 32,23"),
-        ((10, 2, 13), 0.5, 30, "01,10 ; 36,09"),
-        ((10, 2, 13), 0.5, 10, "01,03 ; 24,58"),
-        ((10, 2, 13), 0.5, 49, "01,24 ; 46,20"),
-        ((10, 2, 13), 0.5, 48, "01,24 ; 46,20"),
+        (TableSets.parisian, (1327, 7, 3), 0.5, 31, "03,16 ; 11,46"),
+        (TableSets.parisian, (1327, 7, 3), 0.6, 31, "03,46 ; 35,49"),
+        (TableSets.parisian, (10, 2, 13), 0.5, 43, "01,19 ; 51,41"),
+        (TableSets.parisian, (10, 2, 13), 0.5, 30, "01,10 ; 55,27"),
+        (TableSets.parisian, (10, 2, 13), 0.5, 10, "01,03 ; 44,16"),
+        (TableSets.parisian, (10, 2, 13), 0.5, 49, "01,25 ; 05,16"),
+        (TableSets.parisian, (10, 2, 13), 0.5, 48, "01,25 ; 05,16"),
     ],
 )
-def test_ascendant(date, hours, latitude, result):
+def test_ascendant(ts, date, hours, latitude, result):
     degree_ascension = ascendant(
-        Date(julian_calendar, date, hours * 24).days_from_epoch(), latitude
+        ts, Date(julian_calendar, date, hours * 24).days_from_epoch(), latitude
     )
 
     assert round(Sexagesimal(degree_ascension.value, 2), 2) == Sexagesimal(result)
 
 
 @pytest.mark.parametrize(
-    "method, result2, result8",
+    "ts, method, result2, result8",
     [
-        (HouseMethods.M1, "05,04 ; 52", "02,04 ; 52"),
-        (HouseMethods.M2, "05,05 ; 27", "02,06 ; 56"),
-        (HouseMethods.M5, "04,56 ; 50", "01,56 ; 50"),
-        (HouseMethods.M6, "04,56 ; 38", "01,56 ; 38"),
+        (TableSets.parisian, HouseMethods.M1, "05,04 ; 52", "02,04 ; 52"),
+        (TableSets.parisian, HouseMethods.M2, "05,05 ; 27", "02,06 ; 56"),
+        (TableSets.parisian, HouseMethods.M5, "04,56 ; 50", "01,56 ; 50"),
+        (TableSets.parisian, HouseMethods.M6, "04,56 ; 38", "01,56 ; 38"),
     ],
 )
-def test_houses(method: HouseMethods, result2, result8):
+def test_houses(ts, method: HouseMethods, result2, result8):
     asc = 236 + Sexagesimal("0;38")
-    houses = method(asc * degree, float(Sexagesimal("39;51")))
+    houses = method(ts, asc * degree, float(Sexagesimal("39;51")))
     assert len(houses) == 12
     assert round(houses[2]) == Sexagesimal(result2)
     assert round(houses[8]) == Sexagesimal(result8)

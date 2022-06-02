@@ -1,0 +1,124 @@
+{
+    "FixedStars": {
+        "access_recess_mm": [
+            "0 ; 00,00,30,24,49",
+            "5,59;12,34"
+        ],
+        "mean_motion": [
+            "0 ; 00,00,04,20,41,17,12",
+            "0"
+        ],
+        "access_recess_eq": {
+            "id": 238,
+            "symmetries": [
+                "mirror",
+                {
+                    "type": "periodic",
+                    "targets": [
+                        "3, 1"
+                    ]
+                }
+            ]
+        }
+    },
+    "Moon": {
+        "mean_argument": [
+            "13 ; 03,53,57,30,21,04,13",
+            "3,19;0,14,31,16"
+        ],
+        "mean_motion": [
+            "13 ; 10,35,01,15,11,04,35",
+            "2,2;46,50,16,39"
+        ],
+        "equation_center": 181,
+        "equation_arg": 182,
+        "minuta_proportionalia": 239,
+        "diameter_diversion": 240
+    },
+    "Sun": {
+        "equation": {
+            "id": 19,
+            "symmetries": [
+                "anti_mirror"
+            ]
+        },
+        "mean_motion": [
+            "00;59,08,19,37,19,13,56",
+            "4,38;21,0,30,28"
+        ],
+        "apogee_radix": "1,11;25,23"
+    },
+    "Mars": {
+        "apogee_radix": "1,55;12,13,4",
+        "mean_motion": [
+            "0 ; 31,26,38,40,05",
+            "0,41;25,29,43"
+        ],
+        "center_equation": 187,
+        "arg_equation": 188,
+        "min_prop": 249,
+        "long_longior": 247,
+        "long_propior": 248
+    },
+    "Jupiter": {
+        "apogee_radix": "2,33;37,0,4",
+        "mean_motion": [
+            "0 ; 04,59,15,27,07,23,50",
+            "3,0;37,20,43"
+        ],
+        "center_equation": 185,
+        "arg_equation": 186,
+        "min_prop": 246,
+        "long_longior": 244,
+        "long_propior": 245
+    },
+    "Saturn": {
+        "apogee_radix": "3,53;23,42,4",
+        "mean_motion": [
+            "0 ; 02,00,35,17,40,21",
+            "1,14;5,20,12"
+        ],
+        "center_equation": 235,
+        "arg_equation": 184,
+        "min_prop": 243,
+        "long_longior": 241,
+        "long_propior": 242
+    },
+    "Venus": {
+        "mean_argument": [
+            "0 ; 36,59,27,23,59,31",
+            "2,9;22,2,36"
+        ],
+        "center_equation": 189,
+        "arg_equation": 190,
+        "min_prop": 252,
+        "long_longior": 250,
+        "long_propior": 251
+    },
+    "Mercury": {
+        "apogee_radix": "3,10;39,33,4",
+        "mean_argument": [
+            "03 ; 06,24,07,42,40,52",
+            "45;23,58,0"
+        ],
+        "center_equation": 191,
+        "arg_equation": 192,
+        "min_prop": 255,
+        "long_longior": 253,
+        "long_propior": 254
+    },
+    "ObliqueAscension": {
+        "tables": {
+            "16": 300,
+            "24": 301,
+            "30": 302,
+            "36": 303,
+            "41.5": 304,
+            "45": 305,
+            "48": 306
+        }
+    },
+    "RightAscension": {
+        "table": 404
+    }
+}

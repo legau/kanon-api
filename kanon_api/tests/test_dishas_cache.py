@@ -4,10 +4,15 @@ import shutil
 import sys
 from unittest import mock
 
+from kanon_api import settings
+
 cache_dir = pathlib.Path("dishas_cache")
 
 
 def test_dishas_cache():
+
+    settings.PRODUCTION = True
+
     if cache_dir.exists():
         shutil.rmtree(cache_dir)
 
@@ -30,3 +35,5 @@ def test_dishas_cache():
         importlib.reload(kanon_api.core.ephemerides.tables)
 
     assert mock_open.call_count == len(files)
+
+    settings.PRODUCTION = False

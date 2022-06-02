@@ -12,23 +12,23 @@ client = TestClient(app)
 
 
 @pytest.mark.parametrize(
-    "planet, date, step, nval, result",
+    "ts, planet, date, step, nval, result",
     [
-        ("sun", sdate, 1, 1, "1,47;18,48"),
-        ("sun", (10, 2, 13), 2, 4, "05,22 ; 36,47"),
-        ("moon", sdate, 3, 1, "4,19;35,55"),
-        ("saturn", sdate, 1, 1, "1,47;5,1"),
-        ("venus", sdate, 1, 3, "2,1;27,13"),
-        ("mercury", sdate, 1, 1, "2,13;5,1"),
-        ("sun", (10, 52, 13), 1, 1, HTTPException),
+        ("parisian", "sun", sdate, 1, 1, "1,47;18,48"),
+        ("parisian", "sun", (10, 2, 13), 2, 4, "05,22 ; 56,25"),
+        ("parisian", "moon", sdate, 3, 1, "4,19;35,55"),
+        ("parisian", "saturn", sdate, 1, 1, "1,47;5,1"),
+        ("parisian", "venus", sdate, 1, 3, "2,1;27,13"),
+        ("parisian", "mercury", sdate, 1, 1, "2,13;5,1"),
+        ("parisian", "sun", (10, 52, 13), 1, 1, HTTPException),
     ],
 )
-def test_get_truepos(planet, date, nval, step, result):
+def test_get_truepos(ts, planet, date, nval, step, result):
     y, m, d = date
 
     with TestClient(app) as client:
         response = client.get(
-            f"ephemerides/{planet}/true_pos",
+            f"ephemerides/{ts}/{planet}/true_pos",
             params={
                 "year": y,
                 "month": m,
@@ -40,51 +40,51 @@ def test_get_truepos(planet, date, nval, step, result):
 
     if result == HTTPException:
         assert response.status_code == 400
+        return
 
-    else:
-        assert response.status_code == 200, response.text
-        content: list[dict] = response.json()
+    assert response.status_code == 200, response.text
+    content: list[dict] = response.json()
 
-        pos12h = Sexagesimal(content[0]["position"])
+    pos12h = Sexagesimal(content[0]["position"])
 
-        assert pos12h == Sexagesimal(result)
+    assert pos12h == Sexagesimal(result)
 
-        assert len(content) == nval
+    assert len(content) == nval
 
-        assert all(
-            val.get("jdn") - content[0].get("jdn") == step * idx
-            for idx, val in enumerate(content)
+    assert all(
+        val.get("jdn") - content[0].get("jdn") == step * idx
+        for idx, val in enumerate(content)
+    )
+
+    with TestClient(app) as client:
+        response6h = client.get(
+            f"ephemerides/{ts}/{planet}/true_pos",
+            params={
+                "year": y,
+                "month": m,
+                "day": d,
+                "hours": 6,
+                "number_of_values": nval,
+                "step": step,
+            },
+        )
+        response13h30 = client.get(
+            f"ephemerides/{ts}/{planet}/true_pos",
+            params={
+                "year": y,
+                "month": m,
+                "day": d,
+                "hours": 13,
+                "minutes": 30,
+                "number_of_values": nval,
+                "step": step,
+            },
         )
 
-        with TestClient(app) as client:
-            response6h = client.get(
-                f"ephemerides/{planet}/true_pos",
-                params={
-                    "year": y,
-                    "month": m,
-                    "day": d,
-                    "hours": 6,
-                    "number_of_values": nval,
-                    "step": step,
-                },
-            )
-            response13h30 = client.get(
-                f"ephemerides/{planet}/true_pos",
-                params={
-                    "year": y,
-                    "month": m,
-                    "day": d,
-                    "hours": 13,
-                    "minutes": 30,
-                    "number_of_values": nval,
-                    "step": step,
-                },
-            )
+    pos6h = Sexagesimal(response6h.json()[0]["position"])
+    pos13h30 = Sexagesimal(response13h30.json()[0]["position"])
 
-        pos6h = Sexagesimal(response6h.json()[0]["position"])
-        pos13h30 = Sexagesimal(response13h30.json()[0]["position"])
-
-        assert pos6h < pos12h < pos13h30
+    assert pos6h < pos12h < pos13h30
 
 
 @pytest.mark.parametrize(
@@ -183,22 +183,25 @@ def test_health_check():
     assert response.status_code == 200
 
 
-def test_get_ascendant():
+@pytest.mark.parametrize(
+    "ts, result0, result1", [("parisian", "03,16 ; 11,46", "03,15 ; 42,00")]
+)
+def test_get_ascendant(ts, result0, result1):
     response = client.get(
-        "ephemerides/ascendant",
+        f"ephemerides/{ts}/ascendant",
         params={"year": 1327, "month": 7, "day": 3, "latitude": 31},
     )
 
     assert response.status_code == 200
-    assert response.json()["value"] == "03,16 ; 11,46"
+    assert response.json()["value"] == result0
 
     response = client.get(
-        "ephemerides/ascendant",
+        f"ephemerides/{ts}/ascendant",
         params={"year": 1327, "month": 7, "day": 3, "latitude": 34.8},
     )
 
     assert response.status_code == 200
-    assert response.json()["value"] == "03,15 ; 42,00"
+    assert response.json()["value"] == result1
 
 
 def test_get_compute():
@@ -239,19 +242,23 @@ def test_calendars_get_infos():
     assert data["cycle"][0] == 3
 
 
-def test_houses():
+@pytest.mark.parametrize(
+    "ts, result0, result11, result10",
+    [("parisian", "03,16 ; 11,46", "02,46 ; 34,47", "02,15 ; 54,30")],
+)
+def test_houses(ts, result0, result11, result10):
     response = client.get(
-        "ephemerides/houses",
+        f"ephemerides/{ts}/houses",
         params={"year": 1327, "month": 7, "day": 3, "latitude": 31},
     )
 
     assert response.status_code == 200
     assert len(response.json()) == 12
-    assert response.json()[0] == "03,16 ; 11,46"
-    assert response.json()[11] == "02,46 ; 34,47"
+    assert response.json()[0] == result0
+    assert response.json()[11] == result11
 
     response = client.get(
-        "ephemerides/houses",
+        f"ephemerides/{ts}/houses",
         params={
             "year": 1327,
             "month": 7,
@@ -261,7 +268,7 @@ def test_houses():
         },
     )
 
-    assert response.json()[10] == "02,15 ; 54,30"
+    assert response.json()[10] == result10
 
 
 def test_get_model():

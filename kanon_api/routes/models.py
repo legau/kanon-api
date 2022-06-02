@@ -2,7 +2,6 @@ import warnings
 from collections import OrderedDict
 from typing import Any, Literal, Optional
 
-import kanon.models.models  # noqa: F401
 import numpy as np
 from fastapi import HTTPException
 from fastapi.param_functions import Depends, Path
