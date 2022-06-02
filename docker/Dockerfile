@@ -17,6 +17,7 @@ RUN pip install uvicorn
 COPY . ./
 ENV HOST 0.0.0.0
 ENV PORT 8000
+ENV PRODUCTION true
 
 RUN python -m kanon_api.app
 
