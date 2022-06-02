@@ -1,6 +1,6 @@
 import warnings
 from collections import OrderedDict
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 import numpy as np
 from fastapi import HTTPException
@@ -41,13 +41,13 @@ def get_model(model: ModelCallable = Depends(model_path)):
 
 class TableContent(BaseModel):
     arg1: list[float]
-    params: dict[int, Optional[float]]
+    params: dict[int, float | None]
     displacement: list[float] = [
         0,
         0,
         0,
     ]  # (Entries, Arg1, Arg2)
-    arg2: Optional[list[float]] = None
+    arg2: list[float] | None = None
     model: ModelCallable = Depends(model_path)
 
     @validator("displacement")
@@ -67,7 +67,7 @@ class TableContent(BaseModel):
     @root_validator
     def check_model(cls, values: dict[str, Any]):
         params: list[float] = values["params"]
-        arg2: Optional[list[float]] = values.get("arg2")
+        arg2: list[float] | None = values.get("arg2")
         model: ModelCallable = values["model"]
 
         if set(model.params) != set(params):

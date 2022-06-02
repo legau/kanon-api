@@ -1,14 +1,4 @@
-from typing import (
-    Callable,
-    List,
-    Literal,
-    Optional,
-    Protocol,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Callable, Literal, Protocol, TypeVar, cast
 
 from kanon.tables.htable import HTable
 from kanon.tables.symmetries import Symmetry
@@ -42,7 +32,7 @@ def basedstatic(func: Callable) -> RealToBasedQuantity:
 
 
 def read_from_table(
-    tab_id: int, symmetry: Optional[List[Symmetry]] = None
+    tab_id: int, symmetry: list[Symmetry] | None = None
 ) -> RealToBasedQuantity:
 
     table = read_dishas(tab_id)
@@ -53,7 +43,7 @@ def read_from_table(
 
 
 def build_symmetry(
-    sym: Union[Literal["mirror", "periodic", "anti_mirror"], dict]
+    sym: Literal["mirror", "periodic", "anti_mirror"] | dict
 ) -> Symmetry:
     if sym == "anti_mirror":
         return Symmetry("mirror", sign=-1)
@@ -64,7 +54,7 @@ def build_symmetry(
     return Symmetry(sym)
 
 
-TableInput = Union[int, dict]
+TableInput = int | dict
 
 
 def read_table_input(table_input: TableInput):
@@ -75,7 +65,7 @@ def read_table_input(table_input: TableInput):
     return read_from_table(table_id, symmetries)
 
 
-def make_mean_motion(raw_input=Tuple[str, str]):
+def make_mean_motion(raw_input: tuple[str, str]):
 
     mm = (Sexagesimal(raw_input[0]), Sexagesimal(raw_input[1]))
 

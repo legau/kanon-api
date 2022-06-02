@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Optional, Type, TypeVar, Union, cast
+from typing import Type, TypeVar, cast
 
 from kanon.tables.htable import HTable
 from kanon.tables.symmetries import Symmetry
@@ -18,7 +18,7 @@ mirror = Symmetry("mirror")
 
 
 class CelestialBody(metaclass=DeferedMeta):
-    def __init__(self, tset: "TableSet", mean_motion: Optional[tuple[str, str]]):
+    def __init__(self, tset: "TableSet", mean_motion: tuple[str, str] | None):
         self.tset = tset
         if mean_motion:
             self.mean_motion = make_mean_motion(mean_motion)
@@ -60,8 +60,8 @@ class Planet(CelestialBody):
     def __init__(
         self,
         tset: "TableSet",
-        mean_motion: Optional[tuple[str, str]],
-        apogee_radix: Optional[str],
+        mean_motion: tuple[str, str] | None,
+        apogee_radix: str | None,
     ):
         super().__init__(tset, mean_motion)
         if apogee_radix:
@@ -94,13 +94,13 @@ class SuperiorPlanet(Planet):
     def __init__(
         self,
         tset: "TableSet",
-        apogee_radix: Optional[str],
+        apogee_radix: str | None,
         center_equation: TableInput,
         arg_equation: TableInput,
         min_prop: TableInput,
         long_longior: TableInput,
         long_propior: TableInput,
-        mean_motion: Optional[tuple[str, str]],
+        mean_motion: tuple[str, str] | None,
     ):
         super().__init__(tset, mean_motion, apogee_radix)
         self.center_equation = read_table_input(center_equation)
@@ -132,8 +132,8 @@ class InferiorPlanet(SuperiorPlanet):
         long_longior: TableInput,
         long_propior: TableInput,
         mean_argument: tuple[str, str],
-        apogee_radix: Optional[str] = None,
-        mean_motion: Optional[tuple[str, str]] = None,
+        apogee_radix: str | None = None,
+        mean_motion: tuple[str, str] | None = None,
     ):
         super().__init__(
             tset,
@@ -167,7 +167,7 @@ class ObliqueAscension(metaclass=DeferedMeta):
     def __init__(self, tables: dict[float, int]):
         self.tables = {float(k): read_dishas(v) for k, v in tables.items()}
 
-    def _find_index(self, latitude: float) -> tuple[float, Union[float, None], float]:
+    def _find_index(self, latitude: float) -> tuple[float, float | None, float]:
         tab = self.tables
 
         if (
@@ -232,7 +232,7 @@ class RightAscension(metaclass=DeferedMeta):
         return mod(self.rtable.get(mod(right_ascension - 90)) + 90 * degree)
 
 
-TableComp = Union[CelestialBody, ObliqueAscension, RightAscension]
+TableComp = CelestialBody | ObliqueAscension | RightAscension
 
 T = TypeVar("T", bound=TableComp)
 

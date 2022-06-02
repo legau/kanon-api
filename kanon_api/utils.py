@@ -1,7 +1,7 @@
 import inspect
 from concurrent.futures.process import ProcessPoolExecutor
 from enum import Enum
-from typing import Type, TypeVar, Union, no_type_check
+from typing import Type, TypeVar, no_type_check
 
 import kanon.units.definitions as definitions
 from fastapi import Request
@@ -54,7 +54,7 @@ def build_safe_dict_resolver(
     target: dict[str, T],
     name: str,
     param_name: str,
-    default: Union[str, Type[inspect.Parameter.empty]] = inspect.Parameter.empty,
+    default: str | Type[inspect.Parameter.empty] = inspect.Parameter.empty,
 ):
     enum = StrEnum(name, {k: k for k in target.keys()})
 

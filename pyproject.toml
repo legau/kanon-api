@@ -12,7 +12,7 @@ documentation = "https://kanon-api.readthedocs.io"
 "Changelog" = "https://kanon-api.readthedocs.io/changelog.html"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 kanon = "^0.6.0"
 fastapi = "<1.0"
 
