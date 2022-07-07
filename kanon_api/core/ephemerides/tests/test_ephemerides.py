@@ -25,8 +25,8 @@ julian_calendar = Calendar.registry["Julian A.D."]
 @pytest.mark.parametrize(
     "ts, ymd, result",
     [
-        (TableSets.parisian, (1327, 7, 3), "1,47;18,48"),
-        (TableSets.parisian, (10, 2, 13), "05,22 ; 56,25"),
+        (TableSets.parisian_alphonsine_tables, (1327, 7, 3), "1,47;18,48"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), "05,22 ; 56,25"),
     ],
 )
 def test_true_sun(ts, ymd, result):
@@ -39,10 +39,10 @@ def test_true_sun(ts, ymd, result):
 @pytest.mark.parametrize(
     "ts, ymd, result",
     [
-        (TableSets.parisian, (1327, 7, 3), "4,19;35,55"),
-        (TableSets.parisian, (1403, 3, 12), "3,28;15,28"),
-        (TableSets.parisian, (10, 2, 13), "01,14 ; 42,27"),
-        (TableSets.parisian, (1327, 7, 11), "5,57 ; 18,24"),
+        (TableSets.parisian_alphonsine_tables, (1327, 7, 3), "4,19;35,55"),
+        (TableSets.parisian_alphonsine_tables, (1403, 3, 12), "3,28;15,28"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), "01,14 ; 42,27"),
+        (TableSets.parisian_alphonsine_tables, (1327, 7, 11), "5,57 ; 18,24"),
     ],
 )
 def test_true_moon(ts, ymd, result):
@@ -55,14 +55,14 @@ def test_true_moon(ts, ymd, result):
 @pytest.mark.parametrize(
     "planet, ymd, result",
     [
-        (TableSets.parisian(Mars), (1327, 7, 3), "2,14;52,23"),
-        (TableSets.parisian(Mars), (10, 2, 13), "05,40 ; 42,26"),
-        (TableSets.parisian(Saturn), (1327, 7, 3), "1,47;5,1"),
-        (TableSets.parisian(Jupiter), (1327, 7, 3), "2,14;35,29"),
-        (TableSets.parisian(Mercury), (1327, 7, 3), "2,13;5,1"),
-        (TableSets.parisian(Venus), (1327, 7, 3), "2,1;27,13"),
-        (TableSets.parisian(Venus), (7, 2, 23), "01 ; 07,13"),
-        (TableSets.parisian(Mercury), (7, 3, 26), "05,38 ; 38,43"),
+        (TableSets.parisian_alphonsine_tables(Mars), (1327, 7, 3), "2,14;52,23"),
+        (TableSets.parisian_alphonsine_tables(Mars), (10, 2, 13), "05,40 ; 42,26"),
+        (TableSets.parisian_alphonsine_tables(Saturn), (1327, 7, 3), "1,47;5,1"),
+        (TableSets.parisian_alphonsine_tables(Jupiter), (1327, 7, 3), "2,14;35,29"),
+        (TableSets.parisian_alphonsine_tables(Mercury), (1327, 7, 3), "2,13;5,1"),
+        (TableSets.parisian_alphonsine_tables(Venus), (1327, 7, 3), "2,1;27,13"),
+        (TableSets.parisian_alphonsine_tables(Venus), (7, 2, 23), "01 ; 07,13"),
+        (TableSets.parisian_alphonsine_tables(Mercury), (7, 3, 26), "05,38 ; 38,43"),
     ],
 )
 def test_planet_true_pos(planet, ymd, result):
@@ -75,13 +75,13 @@ def test_planet_true_pos(planet, ymd, result):
 @pytest.mark.parametrize(
     "ts, date, hours, latitude, result",
     [
-        (TableSets.parisian, (1327, 7, 3), 0.5, 31, "03,16 ; 11,46"),
-        (TableSets.parisian, (1327, 7, 3), 0.6, 31, "03,46 ; 35,49"),
-        (TableSets.parisian, (10, 2, 13), 0.5, 43, "01,19 ; 51,41"),
-        (TableSets.parisian, (10, 2, 13), 0.5, 30, "01,10 ; 55,27"),
-        (TableSets.parisian, (10, 2, 13), 0.5, 10, "01,03 ; 44,16"),
-        (TableSets.parisian, (10, 2, 13), 0.5, 49, "01,25 ; 05,16"),
-        (TableSets.parisian, (10, 2, 13), 0.5, 48, "01,25 ; 05,16"),
+        (TableSets.parisian_alphonsine_tables, (1327, 7, 3), 0.5, 31, "03,16 ; 11,46"),
+        (TableSets.parisian_alphonsine_tables, (1327, 7, 3), 0.6, 31, "03,46 ; 35,49"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), 0.5, 43, "01,19 ; 51,41"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), 0.5, 30, "01,10 ; 55,27"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), 0.5, 10, "01,03 ; 44,16"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), 0.5, 49, "01,25 ; 05,16"),
+        (TableSets.parisian_alphonsine_tables, (10, 2, 13), 0.5, 48, "01,25 ; 05,16"),
     ],
 )
 def test_ascendant(ts, date, hours, latitude, result):
@@ -95,10 +95,30 @@ def test_ascendant(ts, date, hours, latitude, result):
 @pytest.mark.parametrize(
     "ts, method, result2, result8",
     [
-        (TableSets.parisian, HouseMethods.M1, "05,04 ; 52", "02,04 ; 52"),
-        (TableSets.parisian, HouseMethods.M2, "05,05 ; 27", "02,06 ; 56"),
-        (TableSets.parisian, HouseMethods.M5, "04,56 ; 50", "01,56 ; 50"),
-        (TableSets.parisian, HouseMethods.M6, "04,56 ; 38", "01,56 ; 38"),
+        (
+            TableSets.parisian_alphonsine_tables,
+            HouseMethods.M1,
+            "05,04 ; 52",
+            "02,04 ; 52",
+        ),
+        (
+            TableSets.parisian_alphonsine_tables,
+            HouseMethods.M2,
+            "05,05 ; 27",
+            "02,06 ; 56",
+        ),
+        (
+            TableSets.parisian_alphonsine_tables,
+            HouseMethods.M5,
+            "04,56 ; 50",
+            "01,56 ; 50",
+        ),
+        (
+            TableSets.parisian_alphonsine_tables,
+            HouseMethods.M6,
+            "04,56 ; 38",
+            "01,56 ; 38",
+        ),
     ],
 )
 def test_houses(ts, method: HouseMethods, result2, result8):

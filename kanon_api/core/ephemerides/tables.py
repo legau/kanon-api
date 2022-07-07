@@ -21,7 +21,7 @@ class KeyEnumMeta(EnumMeta):
 
 
 class TableSets(TableSet, Enum, metaclass=KeyEnumMeta):
-    parisian = "parisian_alphonsine_tables.json"
+    parisian_alphonsine_tables = "parisian_alphonsine_tables.json"
 
     @property
     def value(self):

@@ -14,13 +14,13 @@ client = TestClient(app)
 @pytest.mark.parametrize(
     "ts, planet, date, step, nval, result",
     [
-        ("parisian", "sun", sdate, 1, 1, "1,47;18,48"),
-        ("parisian", "sun", (10, 2, 13), 2, 4, "05,22 ; 56,25"),
-        ("parisian", "moon", sdate, 3, 1, "4,19;35,55"),
-        ("parisian", "saturn", sdate, 1, 1, "1,47;5,1"),
-        ("parisian", "venus", sdate, 1, 3, "2,1;27,13"),
-        ("parisian", "mercury", sdate, 1, 1, "2,13;5,1"),
-        ("parisian", "sun", (10, 52, 13), 1, 1, HTTPException),
+        ("parisian_alphonsine_tables", "sun", sdate, 1, 1, "1,47;18,48"),
+        ("parisian_alphonsine_tables", "sun", (10, 2, 13), 2, 4, "05,22 ; 56,25"),
+        ("parisian_alphonsine_tables", "moon", sdate, 3, 1, "4,19;35,55"),
+        ("parisian_alphonsine_tables", "saturn", sdate, 1, 1, "1,47;5,1"),
+        ("parisian_alphonsine_tables", "venus", sdate, 1, 3, "2,1;27,13"),
+        ("parisian_alphonsine_tables", "mercury", sdate, 1, 1, "2,13;5,1"),
+        ("parisian_alphonsine_tables", "sun", (10, 52, 13), 1, 1, HTTPException),
     ],
 )
 def test_get_truepos(ts, planet, date, nval, step, result):
@@ -184,7 +184,8 @@ def test_health_check():
 
 
 @pytest.mark.parametrize(
-    "ts, result0, result1", [("parisian", "03,16 ; 11,46", "03,15 ; 42,00")]
+    "ts, result0, result1",
+    [("parisian_alphonsine_tables", "03,16 ; 11,46", "03,15 ; 42,00")],
 )
 def test_get_ascendant(ts, result0, result1):
     response = client.get(
@@ -244,7 +245,7 @@ def test_calendars_get_infos():
 
 @pytest.mark.parametrize(
     "ts, result0, result11, result10",
-    [("parisian", "03,16 ; 11,46", "02,46 ; 34,47", "02,15 ; 54,30")],
+    [("parisian_alphonsine_tables", "03,16 ; 11,46", "02,46 ; 34,47", "02,15 ; 54,30")],
 )
 def test_houses(ts, result0, result11, result10):
     response = client.get(
