@@ -9,7 +9,7 @@ class KeyEnumMeta(EnumMeta):
     ):
         if isinstance(value, str):
             return getattr(cls, value)
-        return super().__call__(
+        return super().__call__(  # pragma: no cover
             cls,
             value,
             names=names,
