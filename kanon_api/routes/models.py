@@ -1,17 +1,22 @@
 import warnings
 from collections import OrderedDict
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Protocol, runtime_checkable
 
-import kanon.models.models  # noqa: F401
 import numpy as np
 from fastapi import HTTPException
 from fastapi.param_functions import Depends, Path
 from fastapi.routing import APIRouter
-from kanon.models.meta import ModelCallable, get_model_by_id
+from kanon.models.meta import ModelCallable as _ModelCallable
+from kanon.models.meta import get_model_by_id
 from pydantic import BaseModel, root_validator, validator
 from scipy import optimize
 
 router = APIRouter(prefix="/models", tags=["models"])
+
+
+@runtime_checkable
+class ModelCallable(_ModelCallable, Protocol):
+    ...
 
 
 def model_path(model: int = Path(...)) -> ModelCallable:
@@ -42,13 +47,13 @@ def get_model(model: ModelCallable = Depends(model_path)):
 
 class TableContent(BaseModel):
     arg1: list[float]
-    params: dict[int, Optional[float]]
+    params: dict[int, float | None]
     displacement: list[float] = [
         0,
         0,
         0,
     ]  # (Entries, Arg1, Arg2)
-    arg2: Optional[list[float]] = None
+    arg2: list[float] | None = None
     model: ModelCallable = Depends(model_path)
 
     @validator("displacement")
@@ -68,7 +73,7 @@ class TableContent(BaseModel):
     @root_validator
     def check_model(cls, values: dict[str, Any]):
         params: list[float] = values["params"]
-        arg2: Optional[list[float]] = values.get("arg2")
+        arg2: list[float] | None = values.get("arg2")
         model: ModelCallable = values["model"]
 
         if set(model.params) != set(params):

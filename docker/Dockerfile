@@ -1,4 +1,4 @@
-FROM python:3.9.4
+FROM python:3.10.4
 
 ENV PYTHONUNBUFFERED 1
 
@@ -17,6 +17,7 @@ RUN pip install uvicorn
 COPY . ./
 ENV HOST 0.0.0.0
 ENV PORT 8000
+ENV PRODUCTION true
 
 RUN python -m kanon_api.app
 

@@ -1,39 +1,37 @@
-from typing import Type
-
 from kanon.units.radices import BasedQuantity
 
-from .tables import InferiorPlanet, Moon, Sun, SuperiorPlanet
+from .table_classes import InferiorPlanet, SuperiorPlanet, TableSet
 from .utils import mod
 
 
-def sun_true_pos(days: float) -> BasedQuantity:
-    mean_sun_pos = Sun.mean_motion(days)
+def sun_true_pos(table_set: TableSet, days: float) -> BasedQuantity:
+    mean_sun_pos = table_set.Sun.mean_motion(days)
 
-    mean_arg_sun = mean_sun_pos - Sun.get_apogee(days)
+    mean_arg_sun = mean_sun_pos - table_set.Sun.get_apogee(days)
 
-    eq_sun = Sun.equation(mod(mean_arg_sun))
+    eq_sun = table_set.Sun.equation(mod(mean_arg_sun))
 
     true_pos_sun = mod(mean_sun_pos - eq_sun)
 
     return true_pos_sun
 
 
-def moon_true_pos(days: float) -> BasedQuantity:
-    mean_moon_pos = Moon.mean_motion(days)
-    mean_sun_pos = Sun.mean_motion(days)
-    mean_arg = Moon.mean_argument(days)
+def moon_true_pos(table_set: TableSet, days: float) -> BasedQuantity:
+    mean_moon_pos = table_set.Moon.mean_motion(days)
+    mean_sun_pos = table_set.Sun.mean_motion(days)
+    mean_arg = table_set.Moon.mean_argument(days)
 
     moon_center = mod((mean_moon_pos - mean_sun_pos) * 2)
 
-    center_eq = Moon.equation_center(moon_center)
+    center_eq = table_set.Moon.equation_center(moon_center)
 
-    min_prop = Moon.minuta_proportionalia(moon_center) >> 1
+    min_prop = table_set.Moon.minuta_proportionalia(moon_center) >> 1
 
     true_arg = mean_arg + center_eq
 
-    temp_eq_arg = Moon.equation_arg(true_arg)
+    temp_eq_arg = table_set.Moon.equation_arg(true_arg)
 
-    moon_diameter = Moon.diameter_diversion(true_arg) * min_prop.value
+    moon_diameter = table_set.Moon.diameter_diversion(true_arg) * min_prop.value
 
     equation_of_argument = abs(temp_eq_arg) + moon_diameter
 
@@ -43,17 +41,18 @@ def moon_true_pos(days: float) -> BasedQuantity:
     return mod(mean_moon_pos + equation_of_argument)
 
 
-def planet_true_pos(days: float, planet: Type[SuperiorPlanet]) -> BasedQuantity:
+def planet_true_pos(days: float, planet: SuperiorPlanet) -> BasedQuantity:
     mean_pos = planet.mean_motion(days)
 
     apogee = planet.get_apogee(days)
 
     mean_center = mod(mean_pos - apogee)
 
-    if issubclass(planet, InferiorPlanet):
+    mean_arg: BasedQuantity
+    if isinstance(planet, InferiorPlanet):
         mean_arg = planet.mean_argument(days)
     else:
-        sun_mean_pos = Sun.mean_motion(days)
+        sun_mean_pos = planet.tset.Sun.mean_motion(days)
         mean_arg = mod(sun_mean_pos - mean_pos)
 
     center_equation = planet.center_equation(mean_center)

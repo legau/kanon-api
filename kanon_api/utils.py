@@ -1,7 +1,7 @@
 import inspect
 from concurrent.futures.process import ProcessPoolExecutor
 from enum import Enum
-from typing import Type, TypeVar, Union, no_type_check
+from typing import Type, TypeVar, no_type_check
 
 import kanon.units.definitions as definitions
 from fastapi import Request
@@ -9,6 +9,8 @@ from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Query
 from kanon.calendars import Calendar, Date
 from kanon.units import BasedReal
+
+from . import settings
 
 JULIAN_CALENDAR = Calendar.registry["Julian A.D."]
 
@@ -52,7 +54,7 @@ def build_safe_dict_resolver(
     target: dict[str, T],
     name: str,
     param_name: str,
-    default: Union[str, Type[inspect.Parameter.empty]] = inspect.Parameter.empty,
+    default: str | Type[inspect.Parameter.empty] = inspect.Parameter.empty,
 ):
     enum = StrEnum(name, {k: k for k in target.keys()})
 
@@ -110,3 +112,24 @@ def get_executor(request: Request) -> ProcessPoolExecutor:
 class StaticMeta(type):
     def __call__(cls, *args, **kwargs):
         raise TypeError(f"Can't instantiate static class {cls.__name__}")
+
+
+class DeferedMeta(type):
+    def __call__(cls, *args, **kwargs):
+        if settings.PRODUCTION:
+            return super().__call__(*args, **kwargs)
+
+        def init_before_get(obj, attr):
+            try:
+                if not object.__getattribute__(obj, "_initialized"):
+                    obj._initialized = True
+                    object.__getattribute__(obj, "__init__")(*args, **kwargs)
+            except AttributeError:
+                pass
+            return object.__getattribute__(obj, attr)
+
+        cls.__getattribute__ = init_before_get
+
+        new_obj = cls.__new__(cls, *args, **kwargs)
+        new_obj._initialized = False
+        return new_obj
