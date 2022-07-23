@@ -98,20 +98,20 @@ def test_ascendant(ts, date, hours, latitude, result):
         (
             TableSets.parisian_alphonsine_tables,
             HouseMethods.M1,
-            "05,04 ; 52",
-            "02,04 ; 52",
+            "05,03 ; 23",
+            "02,03 ; 23",
         ),
         (
             TableSets.parisian_alphonsine_tables,
             HouseMethods.M2,
             "05,05 ; 27",
-            "02,06 ; 56",
+            "02,05 ; 27",
         ),
         (
             TableSets.parisian_alphonsine_tables,
             HouseMethods.M5,
-            "04,56 ; 50",
-            "01,56 ; 50",
+            "04,52 ; 29",
+            "01,52 ; 29",
         ),
         (
             TableSets.parisian_alphonsine_tables,
@@ -125,5 +125,5 @@ def test_houses(ts, method: HouseMethods, result2, result8):
     asc = 236 + Sexagesimal("0;38")
     houses = method(ts, asc * degree, float(Sexagesimal("39;51")))
     assert len(houses) == 12
-    assert round(houses[2]) == Sexagesimal(result2)
-    assert round(houses[8]) == Sexagesimal(result8)
+    assert round(Sexagesimal(houses[2], 1)) == Sexagesimal(result2)
+    assert round(Sexagesimal(houses[8], 1)) == Sexagesimal(result8)
