@@ -119,7 +119,7 @@ class HouseMethods(Enum):
         self, table_set: TableSet, ascendant: BasedQuantity, latitude: float
     ) -> Houses:
         a0 = table_set.ObliqueAscension.get(ascendant, latitude).value
-        a1 = table_set.RightAscension.reverse_get(ascendant.value).value
+        a1 = table_set.RightAscension.get(ascendant.value).value
 
         return self.value(table_set, ascendant.value, a0, a1)
 

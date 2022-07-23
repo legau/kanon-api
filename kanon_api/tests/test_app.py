@@ -245,7 +245,7 @@ def test_calendars_get_infos():
 
 @pytest.mark.parametrize(
     "ts, result0, result11, result10",
-    [("parisian_alphonsine_tables", "03,16 ; 11,46", "02,46 ; 34,47", "02,15 ; 54,30")],
+    [("parisian_alphonsine_tables", "03,16 ; 11,46", "02,46 ; 34,47", "02,15 ; 00,47")],
 )
 def test_houses(ts, result0, result11, result10):
     response = client.get(
