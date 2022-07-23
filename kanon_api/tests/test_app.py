@@ -328,12 +328,14 @@ def test_fill_model():
     assert response.json() == {"detail": "Null parameter"}
 
 
-def test_estimate_model():
+def test_estimate_parameter():
     arg1 = list(range(30))
+    entries = [equ_of_the_sun(x, 1) for x in arg1]
+    entries[5] = entries[11] = entries[13] = None
     response = client.post(
         f"models/{equ_of_the_sun.formula_id}/estimate/",
         json={
-            "entries": [equ_of_the_sun(x, 1) for x in arg1],
+            "entries": entries,
             "arg1": arg1,
             "params": {"50": None},
             "displacement": [0, 0, 0],
@@ -343,6 +345,8 @@ def test_estimate_model():
     assert response.json() == {"50": 1}
 
     arg2 = list(range(5))
+    entries = [planet_double_arg_mercury(x, y, 1, 2) for y in arg2 for x in arg1]
+    entries[6] = None
     response = client.post(
         f"models/{planet_double_arg_mercury.formula_id}/estimate/",
         json={
