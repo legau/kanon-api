@@ -88,7 +88,7 @@ safe_radix = build_safe_dict_resolver(
     {
         x.__name__: x
         for x in definitions.__dict__.values()
-        if inspect.isclass(x) and issubclass(x, BasedReal)
+        if inspect.isclass(x) and issubclass(x, BasedReal) and x is not BasedReal
     },
     "SupportedRadices",
     "radix",

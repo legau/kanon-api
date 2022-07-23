@@ -118,7 +118,7 @@ def fill_by_model(content: TableContent = Depends()):
 
 @router.post("/{model}/estimate/", response_model=dict[int, float])
 def estimate_parameter(
-    entries: list[float],
+    entries: list[float | None],
     content: TableContent = Depends(),
 ):
     if len(content) != len(entries):
@@ -135,24 +135,32 @@ def estimate_parameter(
             for p in content.ordered_params.values()
         ]
 
+    arguments: list
     if content.arg2:
-        arguments = np.array([[a, b] for b in content.arg2 for a in content.arg1])
+        arguments = [[a, b] for b in content.arg2 for a in content.arg1]
 
         def optim_model(args: list, *parameters: float):
             return np.array([content(*arg, *params(parameters)) for arg in args])
 
     else:
-        arguments = np.array(content.arg1)
+        arguments = content.arg1
 
         def optim_model(args: list, *parameters: float):
             return np.array([content(arg, *params(parameters)) for arg in args])
 
     keys = [k for k, v in content.ordered_params.items() if v is None]
 
+    assert len(entries) == len(arguments)
+
+    for idx, entry in enumerate(entries):
+        if entry is None:
+            del entries[idx]
+            del arguments[idx]
+
     with warnings.catch_warnings():
         try:
             popt, _ = optimize.curve_fit(
-                optim_model, arguments, np.array(entries), [1] * len(keys)
+                optim_model, np.array(arguments), np.array(entries), [1] * len(keys)
             )
         except TypeError as err:  # pragma: no cover
             raise HTTPException(status_code=400, detail=str(err))
